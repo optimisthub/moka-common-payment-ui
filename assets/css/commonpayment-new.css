@@ -390,10 +390,10 @@ a,
     border-radius: 35px;
     position: relative;
     transform: rotateY(180deg);
-    /* Arka yüz varsayılan olarak GİZLİ. Chrome'da backface-visibility culling'i
-       kararsız çalışıyor (canlı demoda 6 render'ın 5'inde arka yüz ön yüzün
-       üstüne bindi), bu yüzden görünürlük animasyonun ortasında anahtarlanır —
-       culling'e hiç güvenilmez. */
+    /* Arka yüz varsayılan olarak GİZLİ: 3B culling'e güvenilmez.
+       (Chrome, CSS gecikmeli geldiğinde stilsiz ilk kareyi boyayabiliyor ve
+       backface-visibility tek başına yeterli olmuyor; görünürlük, çevirmenin
+       ortasında — 300ms — anahtarlanır.) */
     visibility: hidden;
     transition: transform 0.6s, visibility 0s 0.3s;
     z-index: 1;
@@ -412,10 +412,9 @@ a,
 #container-new-ui .credit-card-front,
 #container-new-ui .credit-card-back {
     position: absolute;
-    /* DİKKAT: Buraya overflow:hidden EKLEMEYİN. Yüzeyde kırpma katmanı
-       oluştuğunda Chrome backface-visibility culling'ini zaman zaman kaybediyor
-       ve arka yüz ön yüzün üstüne biniyor (canlı demoda 3 render'ın 2'sinde
-       görüldü). Kırpma, dekoratif katmanın kendisinde yapılır (__effects). */
+    /* DİKKAT: Buraya overflow:hidden EKLEMEYİN — kart yüzeyinde kırpma katmanı
+       oluşması 3B katmanla çakışıyor (arka yüzün ön yüze binmesine yol açıyor).
+       Kırpma, dekoratif katmanın kendisinde yapılır (__effects). */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -504,6 +503,11 @@ a,
 #container-new-ui .credit-card-front__effects__second-svg {
     position: absolute;
     bottom: 0;
+    /* Orijinalde bu SVG'nin `left` değeri yoktu; konumu, kartın ortasındaki
+       0 genişlikli akış kutusundan (static position) geliyordu. Katman artık
+       konumlandırıldığı için o değer açıkça verilir — aksi hâlde desen sola
+       kayıp kartın ortasında sert bir kenar oluşturuyor. */
+    left: 50%;
 }
 
 #container-new-ui .credit-card-back .credit-card-back__band {
