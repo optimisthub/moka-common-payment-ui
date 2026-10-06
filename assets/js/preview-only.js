@@ -160,36 +160,6 @@
     var flags = (location.hash || '').replace(/^#/, '').split(',').map(function (f) { return f.trim(); });
     var has = function (flag) { return flags.indexOf(flag) > -1; };
 
-    /* Tema: #dark / #light niteliği zorlar, #theme küçük bir anahtar basar.
-       (Üretimde bu niteliği kendi JS'inizle veya sunucudan set edebilirsiniz.) */
-    if (has('dark')) {
-        document.documentElement.setAttribute('data-moka-theme', 'dark');
-    }
-    if (has('light')) {
-        document.documentElement.setAttribute('data-moka-theme', 'light');
-    }
-    if (has('theme')) {
-        var bar = document.createElement('div');
-        bar.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:3000;display:flex;gap:8px;' +
-            'padding:8px;border-radius:999px;background:rgba(20,28,48,.92);box-shadow:0 10px 30px -12px rgba(0,0,0,.6)';
-        ['auto', 'light', 'dark'].forEach(function (mode) {
-            var b = document.createElement('button');
-            b.type = 'button';
-            b.textContent = mode;
-            b.style.cssText = 'border:0;border-radius:999px;padding:8px 14px;font:600 12px/1 ' +
-                "'Source Sans Pro',sans-serif;cursor:pointer;background:transparent;color:#c9d4ff";
-            b.addEventListener('click', function () {
-                if (mode === 'auto') {
-                    document.documentElement.removeAttribute('data-moka-theme');
-                } else {
-                    document.documentElement.setAttribute('data-moka-theme', mode);
-                }
-            });
-            bar.appendChild(b);
-        });
-        document.body.appendChild(bar);
-    }
-
     if (has('filled') && cardNumberInput) {
         cardHolderInput.value = 'AHMET YILMAZ';
         cardHolderInput.dispatchEvent(new Event('input'));
@@ -284,7 +254,8 @@
          '.credit-card-front__contactless', '.credit-card-front__card-number',
          '.credit-card-front__card-number p', '.credit-card-front__name',
          '.credit-card-front__name p', '.credit-card-front__expiration-date',
-         '.footer-container-logos', '.credit-card-upper-left-layer svg'].forEach(function (sel) {
+         '.footer-container-logos', '.credit-card-upper-left-layer svg',
+         '.credit-card-bottom-right-layer svg'].forEach(function (sel) {
             var el = q(sel);
             if (!el) { return; }
             var r = el.getBoundingClientRect();

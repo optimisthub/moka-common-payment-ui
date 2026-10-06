@@ -26,8 +26,7 @@
     --m-disabled-ink: #6d778f;
     --m-mint-ink: #00b45f; /* metin/ikon için kontrastlı mint */
     --m-mint-soft: rgba(0, 247, 123, .16);
-    /* Metin aksanı — aksiyon lacivertinden ayrı tutulur ki karanlık temada
-       düğme zemini koyu, metin aksanı açık kalabilsin */
+    /* Metin aksanı — düğme zemininden ayrı tutulur (başlık/etiket hiyerarşisi) */
     --m-accent: #223886;
     --m-accent-strong: #1b2e73;
     /* Metin */
@@ -79,15 +78,6 @@
     --m-panel-bg: transparent;
         radial-gradient(900px 420px at 6% -8%, rgba(34, 56, 134, .075), transparent 62%),
         radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .07), transparent 60%);
-    /* Tek renkli marka varlıkları karanlık zeminde kaybolmasın diye
-       açık bir plaka üzerine alınır (açık temada plaka yoktur).
-       Logo plakası box-shadow spread ile çizilir → yerleşimi büyütmez;
-       alt logo şeridi ise normal padding kullanır. */
-    --m-logo-plate-bg: transparent;
-    --m-logo-plate-pad: 0px;
-    --m-plate-bg: transparent;
-    --m-plate-pad: 0;
-    --m-plate-radius: 0;
     --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23223886' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     color-scheme: light;
     /* Hareket */
@@ -354,12 +344,6 @@ a,
     justify-content: center;
     width: fit-content;
     max-width: 100%;
-    /* Karanlıkta tek parça plaka; negatif margin yerleşimi büyütmez */
-    padding: var(--m-logo-plate-pad);
-    margin: calc(var(--m-logo-plate-pad) * -1);
-    background-color: var(--m-logo-plate-bg);
-    border-radius: var(--m-plate-radius);
-    transition: background-color var(--m-dur) var(--m-ease);
 }
 
     #container-new-ui .credit-card-container .credit-card-container__logo img {
@@ -372,7 +356,11 @@ a,
     transition: transform 0.6s;
     cursor: pointer;
     position: relative;
-    width: 100%;
+    /* Köşe halkaları alanın -80px solunda/sağında durur; alan panelden dar
+       olmazsa geniş ekranlarda panelin dışına taşarlar (1664px'te 80px).
+       Bu yüzden alan tüm genişliklerde 490px — orijinalde bu değer ≤1600px
+       için geçerliydi, üstünde width:100% oluyordu. */
+    width: 490px;
     height: 380px;
     display: flex;
     justify-content: center;
@@ -381,10 +369,12 @@ a,
 #container-new-ui .credit-card-front {
     display: flex;
     justify-content: center;
-    width: min(650px, 100cqw);
+    /* Kart üst sınırı 590px: panelimiz en fazla 646px olduğu için orijinalin
+       650px'i panel kenarlarına yapışırdı (kart + halkalar için pay kalmıyordu). */
+    width: min(590px, 100cqw);
     height: 380px;
     background-image: radial-gradient(100.04% 183.04% at -0.04% 99.9%, #00F77B 0%, rgba(38, 66, 154, 0.89) 66.61%, #0D3C94 100%);
-    border-radius: 40px;
+    border-radius: 35px;
     position: relative;
     transition: transform 0.6s;
     z-index: 1;
@@ -393,10 +383,10 @@ a,
 #container-new-ui .credit-card-back {
     display: flex;
     justify-content: center;
-    width: min(650px, 100cqw);
+    width: min(590px, 100cqw);
     height: 380px;
     background-image: radial-gradient(100.04% 183.04% at -0.04% 99.9%, #00F77B 0%, rgba(38, 66, 154, 0.89) 66.61%, #0D3C94 100%);
-    border-radius: 40px;
+    border-radius: 35px;
     position: relative;
     transform: rotateY(180deg);
     transition: transform 0.6s;
@@ -565,18 +555,6 @@ a,
     #container-new-ui .credit-card-bottom-right-layer {
         right: 40px;
         bottom: -70px;
-    }
-}
-
-@media screen and (max-width: 1600px) {
-    #container-new-ui .credit-card-area {
-        width: 490px;
-    }
-
-    #container-new-ui .credit-card-front,
-    #container-new-ui .credit-card-back {
-        width: min(590px, 100cqw);
-        border-radius: 35px;
     }
 }
 
@@ -1305,10 +1283,6 @@ a,
     gap: 14px;
     width: fit-content;
     margin: 0 0 0 auto;
-    background: var(--m-plate-bg);
-    padding: var(--m-plate-pad);
-    border-radius: var(--m-plate-radius);
-    transition: background-color var(--m-dur) var(--m-ease);
 }
 
     #container-new-ui .footer-container-logos img {
@@ -2398,139 +2372,4 @@ a,
         .modal .form-group > label {
             flex: 1 1 auto;
         }
-}
-
-/* --------------------------------------------------------------------------
-   17. KARANLIK TEMA
-   --------------------------------------------------------------------------
-   İki yolla açılır:
-     · İşletim sistemi tercihi  →  @media (prefers-color-scheme: dark)
-     · Zorunlu karanlık         →  <html data-moka-theme="dark">
-   <html data-moka-theme="light"> ise otomatik karanlığı kapatır (her koşulda
-   açık tema isteyen iş yerleri için).data-* niteliğini JS ile değiştirmek
-   yeterlidir; markup'ta hiçbir şey değişmez.
-
-   Tema yalnızca :root üzerindeki --m-* token'larını yeniden bağlar. Bileşen
-   kurallarında renk sabiti kalmadığı için tek tek bileşen ezmeye gerek yok.
-
-   NOT: İki tetikleyici de aynı eşlemeyi kullanır. CSS'te "medya sorgusu VEYA
-   nitelik" tek blokta ifade edilemediği için blok iki kez yazıldı; değerler
-   burada tek yerde duruyor.
-   -------------------------------------------------------------------------- */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-moka-theme="light"]) {
-        color-scheme: dark;
-        --m-ink: #e9edf8;
-        --m-ink-2: #c2cbe2;
-        --m-muted: #98a3bf;
-        --m-surface: #151c31;
-        --m-surface-2: #0b1020;
-        --m-surface-3: #1f2842;
-        --m-line: #27314c;
-        --m-line-strong: #3b4863;
-        --m-line-hover: #5a6885;
-        --m-navy: #2f49b0;
-        --m-disabled-bg: #2a3348;
-        --m-disabled-ink: #7d88a3;
-        --m-accent: #a9baff;
-        --m-accent-strong: #c9d4ff;
-        --m-mint-ink: #29f894;
-        --m-mint-soft: rgba(0, 247, 123, .22);
-        --m-danger: #f79b95;
-        --m-danger-ink: #ffc4bf;
-        --m-danger-bg: #2c1a19;
-        --m-danger-line: #5e2f2c;
-        --m-success: #6ee0a3;
-        --m-success-bg: #10251c;
-        --m-success-line: #22543c;
-        --m-warn: #f0b357;
-        --m-warn-ink: #f6cd92;
-        --m-warn-bg: #2a2113;
-        --m-warn-line: #57431f;
-        --m-info-bg: #16224a;
-        --m-info-bg-strong: #1d2c5e;
-        --m-info-line: #2e3f7a;
-        --m-control-active: #4257c4;
-        --m-hover: rgba(255, 255, 255, .06);
-        --m-hover-strong: rgba(255, 255, 255, .09);
-        --m-header-bg: #1c2540;
-        --m-header-bg-2: #151c31;
-        --m-panel-bg: transparent;
-        --m-shadow-sm: 0 1px 2px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .35);
-        --m-shadow: 0 6px 14px -10px rgba(0, 0, 0, .65), 0 1px 3px rgba(0, 0, 0, .45);
-        --m-shadow-lg: 0 28px 56px -28px rgba(0, 0, 0, .75), 0 10px 24px -16px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .07);
-        --m-ring: 0 0 0 3px rgba(0, 247, 123, .45);
-        --m-ring-navy: 0 0 0 4px rgba(169, 186, 255, .22);
-        --m-logo-plate-bg: rgba(255, 255, 255, .94);
-        --m-logo-plate-pad: 8px;
-        --m-plate-bg: rgba(255, 255, 255, .94);
-        --m-plate-pad: 10px 16px;
-        --m-plate-radius: 14px;
-        --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23a9baff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-            radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .10), transparent 60%);
-        --bs-body-bg: var(--m-surface-2);
-        --bs-body-color: var(--m-ink);
-        --bs-border-color: var(--m-line);
-        --bs-link-color: #6ea8fe;
-        --bs-link-hover-color: #9ec5fe;
-        --bs-modal-bg: var(--m-surface);
-    }
-}
-
-:root[data-moka-theme="dark"] {
-    color-scheme: dark;
-    --m-ink: #e9edf8;
-    --m-ink-2: #c2cbe2;
-    --m-muted: #98a3bf;
-    --m-surface: #151c31;
-    --m-surface-2: #0b1020;
-    --m-surface-3: #1f2842;
-    --m-line: #27314c;
-    --m-line-strong: #3b4863;
-    --m-line-hover: #5a6885;
-    --m-navy: #2f49b0;
-    --m-disabled-bg: #2a3348;
-    --m-disabled-ink: #7d88a3;
-    --m-accent: #a9baff;
-    --m-accent-strong: #c9d4ff;
-    --m-mint-ink: #29f894;
-    --m-mint-soft: rgba(0, 247, 123, .22);
-    --m-danger: #f79b95;
-    --m-danger-ink: #ffc4bf;
-    --m-danger-bg: #2c1a19;
-    --m-danger-line: #5e2f2c;
-    --m-success: #6ee0a3;
-    --m-success-bg: #10251c;
-    --m-success-line: #22543c;
-    --m-warn: #f0b357;
-    --m-warn-ink: #f6cd92;
-    --m-warn-bg: #2a2113;
-    --m-warn-line: #57431f;
-    --m-info-bg: #16224a;
-    --m-info-bg-strong: #1d2c5e;
-    --m-info-line: #2e3f7a;
-    --m-control-active: #4257c4;
-    --m-hover: rgba(255, 255, 255, .06);
-    --m-hover-strong: rgba(255, 255, 255, .09);
-    --m-header-bg: #1c2540;
-    --m-header-bg-2: #151c31;
-    --m-panel-bg: transparent;
-    --m-shadow-sm: 0 1px 2px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .35);
-    --m-shadow: 0 6px 14px -10px rgba(0, 0, 0, .65), 0 1px 3px rgba(0, 0, 0, .45);
-    --m-shadow-lg: 0 28px 56px -28px rgba(0, 0, 0, .75), 0 10px 24px -16px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .07);
-    --m-ring: 0 0 0 3px rgba(0, 247, 123, .45);
-    --m-ring-navy: 0 0 0 4px rgba(169, 186, 255, .22);
-    --m-logo-plate-bg: rgba(255, 255, 255, .94);
-    --m-logo-plate-pad: 8px;
-    --m-plate-bg: rgba(255, 255, 255, .94);
-    --m-plate-pad: 10px 16px;
-    --m-plate-radius: 14px;
-    --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23a9baff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .10), transparent 60%);
-    --bs-body-bg: var(--m-surface-2);
-    --bs-body-color: var(--m-ink);
-    --bs-border-color: var(--m-line);
-    --bs-link-color: #6ea8fe;
-    --bs-link-hover-color: #9ec5fe;
-    --bs-modal-bg: var(--m-surface);
 }
