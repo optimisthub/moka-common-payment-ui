@@ -266,6 +266,10 @@ yansıması, kart çevirme, kart tipi logosu ve sekme gizleme davranışlarını
      (AA eşiği 4.5:1). Link ayrıca altı çizili olduğu için link olduğu anlaşılır.
      WCAG AA istenirse `--bs-link-color` yerine Bootstrap'ın `#0b5ed7` değeri kullanılabilir
      (aynı görünüm, **5.4:1**).
+  3. Kartın arka yüzü **3B culling'e bırakılmaz**: `backface-visibility` tek başına
+     yeterli olmadığı için arka yüz `visibility: hidden` ile gizlenir ve çevirme
+     animasyonunun ortasında (300ms) anahtarlanır. Böylece CSS gecikmeli yüklense bile
+     arka yüz ön yüzün üstüne binemez.
 - **Geniş ekran taşması:** 1366 / 1440 / 1664 / 1920 / 2560 px'te halkaların panel
   sınırına göre konumu ölçüldü (+33 / -2 / -2 / -2 / +118 px). 1664px'te eskiden
   80px taşıyorlardı; alan genişliği tüm genişliklerde 490px'e sabitlenerek düzeltildi.
