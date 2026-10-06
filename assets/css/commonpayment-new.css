@@ -93,10 +93,16 @@
    -------------------------------------------------------------------------- */
 html {
     -webkit-text-size-adjust: 100%;
+    /* Mobilde sayfa elle büyütülemesin: pinch-zoom ve çift dokunma zoom'u
+       kapatılır, kaydırma (pan) çalışmaya devam eder. iOS Safari 13+ ve
+       Android Chrome bu kuralı uygular; iOS'un eski sürümleri için layout'taki
+       viewport meta'sına maximum-scale=1 eklenmesi gerekir (README §9). */
+    touch-action: pan-x pan-y;
 }
 
 body {
     margin: 0;
+    touch-action: pan-x pan-y;
     background-color: var(--m-surface-2);
     color: var(--m-ink);
     font-family: var(--m-font);

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="tr" data-sayfa="karsilastirma">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Karşılaştırma Galerisi — Moka United Ortak Ödeme Sayfası · by OptimistHub</title>
+<meta name="description" content="Moka United ortak ödeme sayfası tasarım iyileştirmesi: önce/sonra görselleri, ölçümlerle doğrulama ve durum ekranları.">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="assets/vendor/preview-fonts.css">
+<style>
+/* ==========================================================================
+   KARŞILAŞTIRMA GALERİSİ — bağımsız sunum sayfası
+   Ödeme sayfasının kendi CSS'inden etkilenmez (o dosya #container-new-ui
+   kapsamındadır), bu yüzden marka değerleri burada token olarak tekrarlanır.
+   ========================================================================== */
+:root {
+    --g-navy: #223886;
+    --g-navy-strong: #1b2e73;
+    --g-ink: #0e1b42;
+    --g-ink-2: #38425e;
+    --g-muted: #5c6780;
+    --g-surface: #ffffff;
+    --g-page: #f5f7fc;
+    --g-surface-3: #eef2fb;
+    --g-line: #e2e7f2;
+    --g-line-strong: #c9d2e6;
+    --g-mint: #00f77b;
+    --g-mint-soft: rgba(0, 247, 123, .16);
+    --g-mint-ink: #00753c;
+    --g-radius: 16px;
+    --g-radius-lg: 24px;
+    --g-shadow-sm: 0 1px 2px rgba(15, 27, 66, .05), 0 1px 3px rgba(15, 27, 66, .04);
+    --g-shadow: 0 8px 20px -14px rgba(15, 27, 66, .22), 0 1px 3px rgba(15, 27, 66, .05);
+    --g-shadow-lg: 0 30px 60px -30px rgba(15, 27, 66, .35), 0 12px 26px -18px rgba(15, 27, 66, .16);
+    --g-font: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --g-container: 1200px;
+    color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    background-color: var(--g-page);
+    color: var(--g-ink);
+    font-family: var(--g-font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: #0d6efd; text-underline-offset: 2px; }
+a:hover { color: #0b5ed7; }
+
+:focus-visible {
+    outline: 2px solid var(--g-navy);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.g-container {
+    width: 100%;
+    max-width: var(--g-container);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* --- Üst bant ------------------------------------------------------------ */
+.g-hero {
+    background-color: var(--g-navy);
+    color: #fff;
+    padding: 40px 0 44px;
+}
+
+.g-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 5px 12px 5px 10px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, .1);
+    color: rgba(255, 255, 255, .92);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+    .g-eyebrow::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: var(--g-mint);
+    }
+
+.g-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(24px, 3.4vw, 34px);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.g-hero p {
+    margin: 0;
+    max-width: 68ch;
+    color: rgba(255, 255, 255, .84);
+    font-size: 15.5px;
+}
+
+.g-hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.g-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 6px;
+    background-color: #fff;
+    color: var(--g-navy);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity .15s ease;
+}
+
+    .g-btn:hover { color: var(--g-navy); opacity: .9; }
+
+    .g-btn--ghost {
+        background-color: transparent;
+        color: #fff;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45);
+    }
+
+        .g-btn--ghost:hover { color: #fff; opacity: .9; }
+
+/* --- Bölümler ------------------------------------------------------------ */
+.g-section { padding: 56px 0 0; }
+.g-section:last-of-type { padding-bottom: 64px; }
+
+.g-section__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 16px;
+    margin-bottom: 8px;
+}
+
+.g-section h2 {
+    margin: 0;
+    font-size: clamp(22px, 2.6vw, 28px);
+    line-height: 1.22;
+    font-weight: 700;
+    letter-spacing: -.012em;
+    color: var(--g-ink);
+}
+
+.g-section__note {
+    margin: 0 0 26px;
+    max-width: 78ch;
+    color: var(--g-muted);
+    font-size: 15px;
+}
+
+.g-count {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background-color: var(--g-surface-3);
+    color: var(--g-ink-2);
+    font-size: 12.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Önce / sonra kartları ---------------------------------------------- */
+.g-compare {
+    background-color: var(--g-surface);
+    border-radius: var(--g-radius-lg);
+    box-shadow: var(--g-shadow);
+    overflow: hidden;
+}
+
+.g-compare + .g-compare { margin-top: 28px; }
+
+.g-compare__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 18px;
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid var(--g-line);
+}
+
+    .g-compare__head h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--g-ink);
+    }
+
+.g-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.g-tag {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: var(--g-surface-3);
+    color: var(--g-ink-2);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+    .g-tag--mint { background-color: var(--g-mint-soft); color: var(--g-mint-ink); }
+
+.g-compare__shot {
+    display: block;
+    background-color: var(--g-surface-3);
+    border-bottom: 1px solid var(--g-line);
+}
+
+    .g-compare__shot img { width: 100%; }
+
+.g-compare__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    gap: 24px 32px;
+    padding: 22px 24px 24px;
+}
+
+.g-label {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--g-muted);
+}
+
+.g-list { margin: 0; padding: 0; list-style: none; }
+
+    .g-list li {
+        position: relative;
+        padding-left: 18px;
+        margin-bottom: 9px;
+        font-size: 15px;
+        color: var(--g-ink-2);
+    }
+
+        .g-list li:last-child { margin-bottom: 0; }
+
+        .g-list li::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: .62em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--g-line-strong);
+        }
+
+        .g-list--ok li::before { background-color: var(--g-mint); }
+
+.g-hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--g-muted);
+}
+
+/* --- Ölçüm tablosu ------------------------------------------------------- */
+.g-table-wrap { overflow-x: auto; padding-bottom: 2px; }
+
+.g-table {
+    width: 100%;
+    min-width: 640px;
+    background-color: var(--g-surface);
+    border-radius: var(--g-radius-lg);
+    box-shadow: var(--g-shadow);
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+    .g-table caption {
+        padding: 18px 24px 4px;
+        text-align: left;
+        color: var(--g-muted);
+        font-size: 13.5px;
+    }
+
+    .g-table th, .g-table td {
+        padding: 12px 24px;
+        text-align: left;
+        border-bottom: 1px solid var(--g-line);
+        vertical-align: top;
+    }
+
+    .g-table thead th {
+        padding-top: 18px;
+        padding-bottom: 12px;
+        color: var(--g-muted);
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .g-table tbody tr:last-child th,
+    .g-table tbody tr:last-child td { border-bottom: 0; }
+
+    .g-table tbody th {
+        font-weight: 600;
+        color: var(--g-ink);
+        white-space: nowrap;
+    }
+
+    .g-table td { color: var(--g-ink-2); }
+
+    .g-table code {
+        padding: 2px 6px;
+        border-radius: 5px;
+        background-color: var(--g-surface-3);
+        color: var(--g-ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13.5px;
+    }
+
+.g-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--g-ink);
+}
+
+.g-ok { color: var(--g-mint-ink); font-weight: 600; }
+.g-warn { color: #b54708; font-weight: 600; }
+
+/* --- Durum ızgarası ------------------------------------------------------ */
+.g-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+}
+
+.g-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--g-surface);
+    border: 1px solid var(--g-line);
+    border-radius: var(--g-radius-lg);
+    box-shadow: var(--g-shadow-sm);
+    overflow: hidden;
+    transition: box-shadow .18s ease, border-color .18s ease;
+}
+
+    .g-card:hover {
+        border-color: var(--g-line-strong);
+        box-shadow: var(--g-shadow);
+    }
+
+.g-card__shot {
+    display: block;
+    position: relative;
+    background-color: var(--g-surface-3);
+    border-bottom: 1px solid var(--g-line);
+}
+
+    .g-card__shot img { width: 100%; }
+
+    .g-card__shot::after {
+        content: "Büyüt";
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background-color: rgba(14, 27, 66, .82);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity .18s ease;
+    }
+
+    .g-card__shot:hover::after,
+    .g-card__shot:focus-visible::after { opacity: 1; }
+
+.g-card__body { padding: 18px 20px 20px; }
+
+    .g-card__body h3 {
+        margin: 0 0 6px;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--g-ink);
+    }
+
+    .g-card__body p {
+        margin: 0;
+        font-size: 14.5px;
+        color: var(--g-muted);
+    }
+
+/* --- Sözleşme listesi ---------------------------------------------------- */
+.g-contract {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.g-contract__item {
+    padding: 20px 22px;
+    background-color: var(--g-surface);
+    border: 1px solid var(--g-line);
+    border-radius: var(--g-radius);
+}
+
+    .g-contract__item h3 {
+        margin: 0 0 6px;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--g-ink);
+    }
+
+    .g-contract__item p {
+        margin: 0;
+        font-size: 14.5px;
+        color: var(--g-muted);
+    }
+
+/* --- Alt bilgi ----------------------------------------------------------- */
+.g-footer {
+    margin-top: 64px;
+    padding: 34px 0 40px;
+    background-color: var(--g-surface);
+    border-top: 1px solid var(--g-line);
+}
+
+.g-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+    .g-footer p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--g-muted);
+    }
+
+.g-footer__links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14.5px; }
+
+/* --- Duyarlı ------------------------------------------------------------- */
+@media (max-width: 860px) {
+    .g-compare__body { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .g-container { padding: 0 16px; }
+    .g-hero { padding: 30px 0 34px; }
+    .g-section { padding-top: 42px; }
+    .g-section:last-of-type { padding-bottom: 48px; }
+    .g-compare__head { padding: 17px 18px 15px; }
+    .g-compare__body { padding: 18px 18px 20px; }
+    .g-table th, .g-table td { padding: 11px 18px; }
+    .g-table caption { padding: 16px 18px 4px; }
+    .g-btn { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="g-hero">
+    <div class="g-container">
+        <p class="g-eyebrow">OptimistHub · Tasarım çalışması</p>
+        <h1>Moka United Ortak Ödeme Sayfası<br>Karşılaştırma Galerisi</h1>
+        <p>
+            Mevcut ödeme sayfasının <strong>yapısı bozulmadan</strong> yalnızca CSS katmanı yenilendi:
+            hiçbir <code>id</code>, <code>class</code>, <code>name</code> veya DOM sırası değişmedi.
+            Aşağıda önce/sonra görselleri, ölçümlerle doğrulama ve durum ekranları yer alıyor.
+        </p>
+        <div class="g-hero-links">
+            <a class="g-btn" href="./">Canlı demoyu aç</a>
+            <a class="g-btn g-btn--ghost" href="https://github.com/optimisthub/moka-common-payment-ui">GitHub deposu</a>
+            <a class="g-btn g-btn--ghost" href="README.md">Teknik doküman</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- ============ 1. ÖNCE / SONRA ============ -->
+    <section class="g-section" aria-labelledby="b-once-sonra">
+        <div class="g-container">
+            <div class="g-section__head">
+                <h2 id="b-once-sonra">Önce / sonra</h2>
+                <span class="g-count">1440px · 390px</span>
+            </div>
+            <p class="g-section__note">
+                Görsellerin sol tarafı canlı sayfanın eski hâli, sağ tarafı yeni tasarım.
+                Ölçüler orijinalden birebir alındı; değişen şey renk, boşluk ve hiyerarşi düzeni.
+            </p>
+
+            <article class="g-compare">
+                <div class="g-compare__head">
+                    <h3>Masaüstü · 1440px</h3>
+                    <div class="g-tags">
+                        <span class="g-tag">Düz lacivert header</span>
+                        <span class="g-tag">Panel hizalı</span>
+                        <span class="g-tag g-tag--mint">Kart gradyanı birebir</span>
+                    </div>
+                </div>
+                <a class="g-compare__shot" href="preview/karsilastirma-masaustu.png" target="_blank" rel="noopener">
+                    <img src="preview/karsilastirma-masaustu.png" width="1440" height="1746"
+                         alt="Masaüstü önce/sonra karşılaştırması: solda eski tasarım, sağda yeni tasarım."
+                         loading="lazy" decoding="async">
+                </a>
+                <div class="g-compare__body">
+                    <div>
+                        <p class="g-label">Neler değişti</p>
+                        <ul class="g-list g-list--ok">
+                            <li>Üst bant tek düz renk <code>#223886</code>; gradyan, ışık ve çizgi katmanları kaldırıldı.</li>
+                            <li>Kart paneli sağ kolondaki “Ödeme Onayı” başlığıyla <strong>üstten ve alttan tam hizalı</strong> (fark 0px).</li>
+                            <li>Kart alanının zemini kaldırıldı; logo, kart ve köşe grafikleri doğrudan sayfa yüzeyinde.</li>
+                            <li>İki düğme de orijinal mavi <code>#223886</code> ve orijinal <strong>6px</strong> köşe yarıçapında.</li>
+                            <li>KVKK bağlantısı standart mavi <code>#0d6efd</code> ve altı çizili; link olduğu anlaşılıyor.</li>
+                            <li>Form alanları tek parça: Kart Sahibi → Kart Numarası arası <strong>0px</strong>.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="g-label">Neler değişmedi</p>
+                        <ul class="g-list">
+                            <li>Kart ölçüsü <span class="g-num">590×380</span> ve yarıçapı <span class="g-num">35px</span>.</li>
+                            <li>Çip <span class="g-num">67×53</span>, karta göre <code>top:100 left:64</code>.</li>
+                            <li>Kart numarası <span class="g-num">34px</span>, isim <span class="g-num">21px</span>, ay-yıl <span class="g-num">28px</span>.</li>
+                            <li>Köşe halkaları ve ışık desenleri: konum, ölçü ve renk aynı.</li>
+                            <li>Logo <span class="g-num">200px</span> + <span class="g-num">24px</span> boşluk.</li>
+                            <li>Markup: <code>id</code> / <code>class</code> / <code>name</code> / DOM sırası birebir aynı.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="g-compare">
+                <div class="g-compare__head">
+                    <h3>Mobil · 390px</h3>
+                    <div class="g-tags">
+                        <span class="g-tag">Marka şeridi</span>
+                        <span class="g-tag g-tag--mint">İlk ekranda form</span>
+                    </div>
+                </div>
+                <a class="g-compare__shot" href="preview/karsilastirma-mobil.png" target="_blank" rel="noopener">
+                    <img src="preview/karsilastirma-mobil.png" width="736" height="1214"
+                         alt="Mobil önce/sonra karşılaştırması: solda eski, sağda yeni tasarım."
+                         loading="lazy" decoding="async">
+                </a>
+                <div class="g-compare__body">
+                    <div>
+                        <p class="g-label">Neler değişti</p>
+                        <ul class="g-list g-list--ok">
+                            <li>Logo ve kart alt alta değil <strong>yan yana</strong>: marka bloğu <span class="g-num">343px → 157px</span>.</li>
+                            <li>“Ödeme Onayı” başlığı <span class="g-num">y=471 → y=272</span>; tutar ve form ilk ekranda görünür.</li>
+                            <li>Kart genişliği panelden türetilir: <code>min(100cqw − logo − boşluk, 320px)</code>.</li>
+                            <li>Küçük kartta iç tipografi oranları yükseltilir; kart numarası tam okunur.</li>
+                            <li>Kart bilgileri ızgarası telefonda tek kolona iner.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="g-label">Ölçüm</p>
+                        <ul class="g-list">
+                            <li>360px şerit <span class="g-num">139px</span>, 390px <span class="g-num">157px</span>, 480px <span class="g-num">201px</span>.</li>
+                            <li>Şerit <span class="g-num">≤767px</span> boyunca geçerli; 768px’te iki kolonlu düzene döner.</li>
+                            <li>Kart üst sınırı <span class="g-num">320px</span>; genişlikle birlikte orantılı küçülür.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ============ 2. ÖLÇÜMLER ============ -->
+    <section class="g-section" aria-labelledby="b-olcum">
+        <div class="g-container">
+            <div class="g-section__head">
+                <h2 id="b-olcum">Ölçümlerle doğrulama</h2>
+                <span class="g-count">tarayıcı ölçümü</span>
+            </div>
+            <p class="g-section__note">
+                Aşağıdaki değerler sayfa tarayıcıda render edilerek ölçüldü; tahmin veya hedef değer değil.
+            </p>
+
+            <div class="g-table-wrap">
+                <table class="g-table">
+                    <caption>1440px görünüm · seçili ölçümler</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Öğe</th>
+                            <th scope="col">Ölçüm</th>
+                            <th scope="col">Kaynak / not</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Panel hizası</th>
+                            <td><span class="g-ok">üst 0px · alt 0px</span></td>
+                            <td>“Ödeme Onayı” başlığı ve kart logoları ile tam hizalı (panel 646×663).</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Kart</th>
+                            <td><span class="g-num">590×380</span> · yarıçap <span class="g-num">35px</span></td>
+                            <td>Orijinal <code>@media (max-width:1600px)</code> değeri.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Çip / temassız</th>
+                            <td><span class="g-num">67×53</span> · <span class="g-num">41×51</span></td>
+                            <td>Karta göre <code>top:100 left:64</code> ve <code>top:30 right:44</code>.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Düğmeler</th>
+                            <td><span class="g-num">317×54</span> · yarıçap <span class="g-num">6px</span></td>
+                            <td>Zemin <code>rgb(34,56,134)</code>, beyaz metin; ikisi de aynı.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">KVKK bağlantısı</th>
+                            <td><code>#0d6efd</code> · <span class="g-warn">4.2:1</span></td>
+                            <td>Standart mavi link; altı çizili. WCAG AA için <code>#0b5ed7</code> önerilir.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Köşe halkaları</th>
+                            <td><span class="g-ok">+33 / −2 / −2 / −2 / +118 px</span></td>
+                            <td>1366 · 1440 · 1664 · 1920 · 2560px, panel sınırına göre; taşma yok.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Mobil marka şeridi</th>
+                            <td><span class="g-num">343px → 157px</span></td>
+                            <td>390px; “Ödeme Onayı” 199px yukarı taşındı.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Canlı demo ↔ yerel</th>
+                            <td><span class="g-ok">RMSE 0</span></td>
+                            <td>GitHub Pages demosu ile yerel render piksel piksel aynı.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 3. DURUMLAR ============ -->
+    <section class="g-section" aria-labelledby="b-durumlar">
+        <div class="g-container">
+            <div class="g-section__head">
+                <h2 id="b-durumlar">Durum ekranları</h2>
+                <span class="g-count">5 görünüm</span>
+            </div>
+            <p class="g-section__note">
+                Ödeme akışının yalnızca ilk ekranı değil; havale/EFT, şifre modalı, hata ve doğrulama
+                durumları da aynı görsel dile getirildi. Görsele tıklayarak tam boyut açabilirsiniz.
+            </p>
+
+            <div class="g-grid">
+                <article class="g-card">
+                    <a class="g-card__shot" href="preview/acik-tema-genis-ekran.png" target="_blank" rel="noopener">
+                        <img src="preview/acik-tema-genis-ekran.png" width="1664" height="917"
+                             alt="1664px geniş ekran görünümü; köşe halkaları panel sınırının içinde."
+                             loading="lazy" decoding="async">
+                    </a>
+                    <div class="g-card__body">
+                        <h3>Geniş ekran · 1664px</h3>
+                        <p>1600px üstünde köşe halkaları panelden 80px taşıyordu; alan 490px’e sabitlendi.</p>
+                    </div>
+                </article>
+
+                <article class="g-card">
+                    <a class="g-card__shot" href="preview/dolu-form.png" target="_blank" rel="noopener">
+                        <img src="preview/dolu-form.png" width="720" height="900"
+                             alt="Doldurulmuş formun yakın planı: kart sahibi, numara, ay/yıl ve CVC alanları."
+                             loading="lazy" decoding="async">
+                    </a>
+                    <div class="g-card__body">
+                        <h3>Doldurulmuş form</h3>
+                        <p>Yüzen etiketler, tabular rakamlar ve tek parça alan grubu yakın planda.</p>
+                    </div>
+                </article>
+
+                <article class="g-card">
+                    <a class="g-card__shot" href="preview/acik-tema-havale-eft.png" target="_blank" rel="noopener">
+                        <img src="preview/acik-tema-havale-eft.png" width="1440" height="1010"
+                             alt="Havale ve EFT ile ödeme akışının ekran görüntüsü."
+                             loading="lazy" decoding="async">
+                    </a>
+                    <div class="g-card__body">
+                        <h3>Havale / EFT akışı</h3>
+                        <p>IBAN kopyalama, tutar ve açıklama alanları ödeme formuyla aynı dile getirildi.</p>
+                    </div>
+                </article>
+
+                <article class="g-card">
+                    <a class="g-card__shot" href="preview/acik-tema-modallar.png" target="_blank" rel="noopener">
+                        <img src="preview/acik-tema-modallar.png" width="1440" height="900"
+                             alt="Şifre belirleme modalının ekran görüntüsü."
+                             loading="lazy" decoding="async">
+                    </a>
+                    <div class="g-card__body">
+                        <h3>Şifre modalı</h3>
+                        <p>“Şifre belirle / şifre gir” pencereleri; Bootstrap 5’te olmayan kapatma düğmesi yeniden çizildi.</p>
+                    </div>
+                </article>
+
+                <article class="g-card">
+                    <a class="g-card__shot" href="preview/acik-tema-hata.png" target="_blank" rel="noopener">
+                        <img src="preview/acik-tema-hata.png" width="1440" height="900"
+                             alt="Hata ve doğrulama durumlarının ekran görüntüsü."
+                             loading="lazy" decoding="async">
+                    </a>
+                    <div class="g-card__body">
+                        <h3>Hata ve doğrulama</h3>
+                        <p>Düz kırmızı yazı yerine hata çipi; BIN sorgusundan gelen banka adı etiket olarak görünür.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 4. SÖZLEŞME ============ -->
+    <section class="g-section" aria-labelledby="b-sozlesme">
+        <div class="g-container">
+            <div class="g-section__head">
+                <h2 id="b-sozlesme">Yapı sözleşmesi</h2>
+                <span class="g-count">değişmeyen</span>
+            </div>
+            <p class="g-section__note">
+                İşin tek şartı mevcut yapıyı bozmamaktı. Üretimde değişen tek dosya
+                <code>commonpayment-new.css</code>; markup ve JavaScript’e dokunulmadı.
+            </p>
+
+            <div class="g-contract">
+                <div class="g-contract__item">
+                    <h3>Markup aynı</h3>
+                    <p>Hiçbir <code>id</code>, <code>class</code>, <code>name</code> veya DOM sırası değişmedi; satır içi stiller korundu.</p>
+                </div>
+                <div class="g-contract__item">
+                    <h3>JS aynı</h3>
+                    <p>Üretim JavaScript’ine dokunulmadı. Demodaki kart yansıması ve çevirme davranışı ayrı bir önizleme dosyasında taklit edilir.</p>
+                </div>
+                <div class="g-contract__item">
+                    <h3>Tek dosya</h3>
+                    <p>Üretimde <code>/Content/Web/css/commonpayment-new.css</code> içeriğinin değiştirilmesi yeterli.</p>
+                </div>
+                <div class="g-contract__item">
+                    <h3>Gerekçeli <code>!important</code></h3>
+                    <p>22 kullanımın tamamı ya markup’taki satır içi stilleri nötrlemek ya eski davranışı korumak için; listesi README’de.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="g-footer">
+    <div class="g-container g-footer__inner">
+        <p>
+            <strong>Moka United Ortak Ödeme Sayfası</strong> · tasarım iyileştirmesi, <strong>by OptimistHub</strong><br>
+            Bu depo bir tasarım çalışmasıdır; Moka United ile bir bağlantıyı veya onayı ima etmez.
+        </p>
+        <nav class="g-footer__links" aria-label="Bağlantılar">
+            <a href="./">Canlı demo</a>
+            <a href="README.md">Teknik doküman</a>
+            <a href="https://github.com/optimisthub/moka-common-payment-ui">GitHub</a>
+        </nav>
+    </div>
+</footer>
+
+</body>
+</html>

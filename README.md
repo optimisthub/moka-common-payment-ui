@@ -1,6 +1,7 @@
 # Moka United — Ortak Ödeme Sayfası · Tasarım İyileştirmesi
 
-**by OptimistHub** · [Canlı demo](https://optimisthub.github.io/moka-common-payment-ui/)
+**by OptimistHub** · [Canlı demo](https://optimisthub.github.io/moka-common-payment-ui/) ·
+[Karşılaştırma galerisi](https://optimisthub.github.io/moka-common-payment-ui/karsilastirma.html)
 
 `https://clientwebpos.refmokaunited.com/commonpaymentpage/{requestId}` sayfasının görsel
 katmanı için hazırlanan HTML + CSS çalışması.
@@ -29,7 +30,10 @@ Sayfadaki tüm JS (`/Scripts/commonpayment-new.js`) bu dosyalarla aynen çalış
 ```
 moka-common-payment-ui/
 ├── index.html                                  Statik önizleme (üretim markup'ının birebir kopyası)
+├── karsilastirma.html                          Karşılaştırma galerisi (önce/sonra + ölçümler + durumlar)
 ├── README.md                                   Bu dosya
+├── .gitignore                                  İç notları ve çalışma dosyalarını dışarıda tutar
+├── .nojekyll                                   GitHub Pages'in dosyaları olduğu gibi sunması için
 ├── preview/
 │   ├── karsilastirma-masaustu.png              Önce / sonra — masaüstü (1440px)
 │   ├── karsilastirma-mobil.png                 Önce / sonra — mobil (390px, yan yana)
@@ -226,6 +230,15 @@ tasarımın tüm durumlarını görebilirsiniz (virgülle birden fazla):
 Önce/sonra ve tüm durum görüntüleri `preview/` klasöründedir (masaüstü, mobil,
 dolu form, havale/EFT, şifre modalı, hata durumu).
 
+### Karşılaştırma galerisi
+
+`karsilastirma.html` bu görselleri **açıklamalarıyla** sunan bağımsız bir sayfadır:
+önce/sonra farkları (neler değişti / neler değişmedi), ölçüm tablosu, durum ekranları
+ve yapı sözleşmesi. Ödeme sayfasının CSS'inden etkilenmez, kendi token'larını taşır.
+
+- Yayında: <https://optimisthub.github.io/moka-common-payment-ui/karsilastirma.html>
+- Yerelde: `moka-common-payment-ui/karsilastirma.html`
+
 `assets/js/preview-only.js` yalnızca bu önizleme içindir; kart numarasının görsel karta
 yansıması, kart çevirme, kart tipi logosu ve sekme gizleme davranışlarını üretimdeki
 `commonpayment-new.js` ile aynı kurallarla taklit eder.
@@ -354,6 +367,12 @@ yardımcı sınıfları nötrlemek için, geri kalanı ise üretimdeki eski davr
 - Renkler 6 haneli hex ve `rgba()` ile yazıldı (8 haneli hex yok); `color-mix()`,
   `oklch()`, `:has()` veya `subgrid` kullanılmadı.
 - `color-scheme: light` ile bildirilir; tarayıcının otomatik koyulaştırması devre dışı kalır.
+- **Mobil zoom kilidi:** `html, body { touch-action: pan-x pan-y }` pinch-zoom'u ve çift
+  dokunma zoom'unu kapatır, kaydırmayı etkilemez (iOS Safari 13+, Android Chrome).
+  iOS'un eski sürümleri bu kuralı yok saydığı için layout'taki viewport meta'sına
+  `maximum-scale=1.0, user-scalable=no` eklenmelidir; demoda (`index.html`) bu şekildedir.
+  İstemezseniz CSS'teki iki satırı ve meta'daki iki anahtarı silmek yeterli.
+  Not: WCAG 1.4.4 metin büyütmeyi gerektirir; bu kilit bilinçli bir tercihtir.
 
 **İsteğe bağlı — telefonda kart görselini tamamen gizlemek:**
 
