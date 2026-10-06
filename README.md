@@ -1,7 +1,7 @@
-# Moka United — Ortak Ödeme Sayfası · Tasarım İyileştirmesi
+# Moka United Checkout UI Redesign
 
-**by OptimistHub** · [Canlı demo](https://optimisthub.github.io/moka-common-payment-ui/) ·
-[Karşılaştırma galerisi](https://optimisthub.github.io/moka-common-payment-ui/karsilastirma.html)
+**by Optimist Hub** · [Canlı Demo](https://optimisthub.github.io/moka-united-checkout-ui-redesign/) ·
+[Karşılaştırma Galerisi](https://optimisthub.github.io/moka-united-checkout-ui-redesign/karsilastirma.html)
 
 `https://clientwebpos.refmokaunited.com/commonpaymentpage/{requestId}` sayfasının görsel
 katmanı için hazırlanan HTML + CSS çalışması.
@@ -28,9 +28,9 @@ Sayfadaki tüm JS (`/Scripts/commonpayment-new.js`) bu dosyalarla aynen çalış
 ## 1. Dosya yapısı
 
 ```
-moka-common-payment-ui/
+moka-united-checkout-ui-redesign/
 ├── index.html                                  Statik önizleme (üretim markup'ının birebir kopyası)
-├── karsilastirma.html                          Karşılaştırma galerisi (önce/sonra + ölçümler + durumlar)
+├── karsilastirma.html                          Karşılaştırma Galerisi (önce/sonra + ölçümler + durumlar)
 ├── README.md                                   Bu dosya
 ├── .gitignore                                  İç notları ve çalışma dosyalarını dışarıda tutar
 ├── .nojekyll                                   GitHub Pages'in dosyaları olduğu gibi sunması için
@@ -230,14 +230,14 @@ tasarımın tüm durumlarını görebilirsiniz (virgülle birden fazla):
 Önce/sonra ve tüm durum görüntüleri `preview/` klasöründedir (masaüstü, mobil,
 dolu form, havale/EFT, şifre modalı, hata durumu).
 
-### Karşılaştırma galerisi
+### Karşılaştırma Galerisi
 
 `karsilastirma.html` bu görselleri **açıklamalarıyla** sunan bağımsız bir sayfadır:
 önce/sonra farkları (neler değişti / neler değişmedi), ölçüm tablosu, durum ekranları
 ve yapı sözleşmesi. Ödeme sayfasının CSS'inden etkilenmez, kendi token'larını taşır.
 
-- Yayında: <https://optimisthub.github.io/moka-common-payment-ui/karsilastirma.html>
-- Yerelde: `moka-common-payment-ui/karsilastirma.html`
+- Yayında: <https://optimisthub.github.io/moka-united-checkout-ui-redesign/karsilastirma.html>
+- Yerelde: `moka-united-checkout-ui-redesign/karsilastirma.html`
 
 `assets/js/preview-only.js` yalnızca bu önizleme içindir; kart numarasının görsel karta
 yansıması, kart çevirme, kart tipi logosu ve sekme gizleme davranışlarını üretimdeki
