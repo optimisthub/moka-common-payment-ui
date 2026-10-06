@@ -180,7 +180,7 @@ ama markup'tan silinirse daha temiz olur):
   düğmesi yeniden çizildi.
 - **Tarayıcı yüzeyleri:** seçim rengi (mint %32), `caret-color`, özel kaydırma çubuğu,
   `:focus-visible` halkaları.
-- `prefers-reduced-motion: reduce` desteği eklendi.
+- `prefers-reduced-motion: reduce` ve `@media print` desteği eklendi.
 
 ### Orijinalden birebir korunan değerler
 
@@ -336,7 +336,7 @@ yardımcı sınıfları nötrlemek için, geri kalanı ise üretimdeki eski davr
 |---|---|
 | `.table { --bs-table-color/bg/striped-color: revert }` | Bootstrap 5 tablo değişkenlerini sıfırlar (kayıtlı kart tablosu) |
 | `.msg-label`, `.custom-card-label`, `.transfer-payment__copy-btn` font-size | Eski CSS'te de `!important` ile yazılmıştı; davranış değişmesin diye korundu |
-| `@media print` ve `prefers-reduced-motion` blokları | Hareketi ve çıktıyı zorunlu olarak kapatır |
+| `@media (prefers-reduced-motion: reduce)` ve `@media print` blokları | Hareketi ve çıktıyı zorunlu olarak kapatır (kart görseli, butonlar ve logolar yazdırmada gizlenir) |
 
 ---
 
