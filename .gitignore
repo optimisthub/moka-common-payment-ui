@@ -1,0 +1,20 @@
+# ── Public repoya girmemesi gerekenler ──────────────────────────────────────
+# Üretim / iç notlar: neden yapıldı, bulgular, müşteri yazışmaları.
+# Bu dosyalar yalnızca yerelde kalır, commit edilmez.
+NOTLAR-URETIM.md
+NOTLAR-*.md
+*-INTERNAL.md
+*-ic-notlar*.md
+
+# Tasarım çalışma dosyaları ve indirilen referanslar
+.design/
+*.psd
+*.sketch
+*.fig
+
+# Sistem / editör
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,2536 @@
+@charset "UTF-8";
+/* ==========================================================================
+   Moka United — Ortak Ödeme Sayfası (Common Payment Page)
+   Görsel iyileştirme katmanı — commonpayment-new.css yerine geçer (drop-in).
+
+   KURALLAR
+   · Hiçbir id / class / name / form alanı değiştirilmedi. Sadece görsel katman.
+   · Sayfa Bootstrap 5 + jquery-ui.css + mokacustom.css üzerine yüklenir;
+     bu dosya en son yüklenmeli ve önceki katmanları ezmek için
+     #container-new-ui kapsamı ile yazılmıştır.
+   · Font: sayfanın gerçekten servis ettiği 'Source Sans Pro'
+     (/fonts/sans/...) kullanılır. Lato dosyaları sunucuda 404 döndüğü için
+     font yığınından çıkarıldı.
+   · Ağırlıklar: 400 / 600 / 700. Sunucu yalnızca 400'ü tanımlıyor;
+     600/700 tarayıcı tarafından sentezlenir. Gerçek ağırlıklar için
+     README'deki opsiyonel @font-face bloğuna bakın.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TASARIM TOKEN'LARI
+   -------------------------------------------------------------------------- */
+:root {
+    /* Marka */
+    --m-navy: #223886;
+    --m-disabled-bg: #ced6e8;
+    --m-disabled-ink: #6d778f;
+    --m-mint-ink: #00b45f; /* metin/ikon için kontrastlı mint */
+    --m-mint-soft: rgba(0, 247, 123, .16);
+    /* Metin aksanı — aksiyon lacivertinden ayrı tutulur ki karanlık temada
+       düğme zemini koyu, metin aksanı açık kalabilsin */
+    --m-accent: #223886;
+    --m-accent-strong: #1b2e73;
+    /* Metin */
+    --m-ink: #0e1b42;
+    --m-ink-2: #38425e;
+    --m-muted: #5c6780;
+    /* Yüzeyler */
+    --m-surface: #ffffff;
+    --m-surface-2: #f5f7fc;
+    --m-surface-3: #eef2fb;
+    --m-line: #e2e7f2;
+    --m-line-strong: #c9d2e6;
+    /* Durumlar */
+    --m-danger: #b42318;
+    --m-danger-ink: #7a1a12;
+    --m-danger-bg: #fef3f2;
+    --m-danger-line: #fda29b;
+    --m-success: #05603a;
+    --m-success-bg: #ecfdf3;
+    --m-success-line: #a6f4c5;
+    --m-warn: #b54708;
+    --m-warn-bg: #fffaeb;
+    --m-warn-line: #fedf89;
+    --m-info-bg: #eff6ff;
+    --m-info-bg-strong: #dbeafe;
+    --m-info-line: #bfdbfe;
+    --m-warn-ink: #8a5a12;
+    /* Form kontrolleri ve etkileşim durumları */
+    --m-control-active: #223886;
+    --m-hover: rgba(0, 0, 0, .03);
+    --m-hover-strong: rgba(255, 255, 255, .75);
+    --m-line-hover: #a9b7d6;
+    /* Biçim */
+    --m-radius: 16px;
+    --m-radius-sm: 12px;
+    --m-radius-xs: 10px;
+    --m-r-card: 14px;
+    /* Gölgeler — offset'li ve yumuşak (halo değil) */
+    --m-shadow-sm: 0 1px 2px rgba(0, 0, 0, .05), 0 1px 3px rgba(0, 0, 0, .04);
+    --m-shadow: 0 6px 14px -10px rgba(0, 0, 0, .18), 0 1px 3px rgba(0, 0, 0, .05);
+    --m-shadow-lg: 0 28px 56px -28px rgba(0, 0, 0, .30), 0 10px 24px -16px rgba(0, 0, 0, .15);
+    --m-ring: 0 0 0 3px rgba(0, 247, 123, .38);
+    --m-ring-navy: 0 0 0 4px rgba(34, 56, 134, .12);
+    /* Yüzeyler / marka plakaları */
+    --m-header-bg: #fbfcff;
+    --m-header-bg-2: #f4f7fc;
+    /* Kart alanının zemini yok (şeffaf). Gri zemin istenirse buraya
+       #F3F4F6 (modernize) veya #F2F2F1 (orijinal) yazmak yeterli. */
+    --m-panel-bg: transparent;
+        radial-gradient(900px 420px at 6% -8%, rgba(34, 56, 134, .075), transparent 62%),
+        radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .07), transparent 60%);
+    /* Tek renkli marka varlıkları karanlık zeminde kaybolmasın diye
+       açık bir plaka üzerine alınır (açık temada plaka yoktur).
+       Logo plakası box-shadow spread ile çizilir → yerleşimi büyütmez;
+       alt logo şeridi ise normal padding kullanır. */
+    --m-logo-plate-bg: transparent;
+    --m-logo-plate-pad: 0px;
+    --m-plate-bg: transparent;
+    --m-plate-pad: 0;
+    --m-plate-radius: 0;
+    --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23223886' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    color-scheme: light;
+    /* Hareket */
+    --m-ease: cubic-bezier(.22, .61, .36, 1);
+    --m-dur: .18s;
+    /* Ölçü */
+    --m-page-max: 1360px;
+    --m-font: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   2. TEMEL / TARAYICI YÜZEYLERİ
+   -------------------------------------------------------------------------- */
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background-color: var(--m-surface-2);
+    color: var(--m-ink);
+    font-family: var(--m-font);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Seçim, caret, kaydırma çubuğu — paletten gelir */
+::selection {
+    background: rgba(0, 247, 123, .32);
+    color: var(--m-ink);
+}
+
+::-moz-selection {
+    background: rgba(0, 247, 123, .32);
+    color: var(--m-ink);
+}
+
+input,
+textarea {
+    caret-color: var(--m-accent);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c6cfe3 transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c6cfe3;
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a9b5ce;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+
+button,
+a,
+[tabindex] {
+    outline-offset: 2px;
+}
+
+    button:focus-visible,
+    a:focus-visible,
+    [tabindex]:focus-visible {
+        outline: 2px solid var(--m-accent);
+        outline-offset: 2px;
+    }
+
+/* Tipografi tabanı: mokacustom.css'in global `label{font-size:18px}` kuralını
+   bu sayfa içinde etkisiz bırakır. */
+#container-new-ui label,
+.modal label {
+    font-size: 13px;
+    font-family: var(--m-font);
+}
+
+#container-new-ui h4,
+#container-new-ui h5,
+#container-new-ui h3,
+.modal h4 {
+    font-family: var(--m-font);
+}
+
+/* --------------------------------------------------------------------------
+   3. SAYFA İSKELETİ
+   -------------------------------------------------------------------------- */
+#container-new-ui {
+    padding: 0 0 48px;
+    position: relative;
+}
+
+    #container-new-ui .container-fluid {
+        padding: 0;
+    }
+
+    /* Bootstrap/mokacustom `.container` varsayılanlarını bu sayfada sıfırla.
+       Tüm bileşen kuralları aynı kapsamda ve sonrasında yazıldığı için
+       kaynak sırasına göre kazanır — !important gerekmez. */
+    #container-new-ui .container {
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
+        background-color: transparent;
+    }
+
+    #container-new-ui .row {
+        margin-bottom: 0;
+    }
+
+/* Sekme kabı: iki kolon, içerik 1360px'te ortalanır. Kolon genişlikleri
+   bootstrap media query'lerine bağlı kalmadan flex-basis ile belirlenir. */
+/* Sekme çubuğu ve içerik aynı kapsayıcıdan hizalanır;
+   #tabUL gizliyken (kayıtlı kart yoksa) hiçbir boşluk kalmaz. */
+#tabs {
+    max-width: var(--m-page-max);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+#tabs-1 {
+    display: flex;
+    flex-wrap: wrap;
+    /* Panel, sağ kolonun yüksekliğine yayılır → üstten "Ödeme Onayı",
+       alttan kart logoları ile tam hizalı olur. */
+    align-items: stretch;
+    gap: 28px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 28px 0 0;
+}
+
+    #tabs-1 > [class*="col-"] {
+        flex: 1 1 420px;
+        width: auto;
+        max-width: 100%;
+        padding: 0;
+        min-width: 0;
+    }
+
+    /* Sol kolon: kart paneli kolonun tam yüksekliğini kaplar */
+    #tabs-1 > [class*="col-"]:first-child {
+        display: flex;
+    }
+
+        #tabs-1 > [class*="col-"]:first-child > .credit-card-container {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+    /* Sağ kolonun iç satırı: bilgi kartı · form · kart logoları */
+    #tabs-1 > [class*="col-"] > .row {
+        margin: 0;
+    }
+
+        #tabs-1 > [class*="col-"] > .row > [class*="col-"] {
+            padding-left: 0;
+            padding-right: 0;
+            width: 100%;
+        }
+
+/* --------------------------------------------------------------------------
+   4. MARKA BANDI (header)
+   -------------------------------------------------------------------------- */
+/* Orijinalde olduğu gibi tek düz renk (mokacustom .blue → #223886) */
+#container-new-ui .container-fluid.blue.fixme {
+    background-image: none;
+    background-color: #223886;
+    padding: 0;
+    box-shadow: none;
+}
+
+    #container-new-ui .fixme header {
+        padding: 15px 20px;
+    }
+
+    #container-new-ui .c-page-new {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        font-size: 14.5px;
+        font-weight: 600;
+        letter-spacing: .012em;
+        color: #fff;
+    }
+
+        #container-new-ui .c-page-new svg {
+            flex: 0 0 auto;
+            width: 1em;
+            height: 1em;
+            margin: 0 !important;
+            opacity: .95;
+        }
+
+/* --------------------------------------------------------------------------
+   5. KART PANELİ + GÖRSEL KART
+   --------------------------------------------------------------------------
+   Aşağıdaki ölçüler orijinal commonpayment-new.css ile BİREBİR aynıdır:
+
+     kart        650 / 590 (≤1600) / 550 (≤1366) / 490 (≤1280) px
+     yarıçap     40 / 35 / 30 px
+     çip         top:100 left:64  (SVG kendi 67×53 ölçüsünde)
+     temassız    top:30 right:44  (41×51)
+     numara      34px · bottom:120 left:72
+     isim        21px · bottom:8 left:72
+     ay-yıl      28px · bottom:68 right:180 · açıklama 12px/14px max-width:40px
+     kart tipi   70px · bottom:68 right:46
+     arka şerit  top:42 · height:82 · #010202
+     CVC         335×60 top:150 left:22 · 26px · margin-right:34
+     imza        122×78 bottom:38 right:44 · radius:38
+     halkalar    left/right:-80  top/bottom:-70  (≤1400: -40)
+     logo        200px + margin-bottom:24
+
+   Bilinçli olarak değişen iki şey:
+     · Panelin gri zemini modernize edildi (orijinal düz #F2F2F1).
+     · Panel sağ kolonla üstten/alttan hizalanır (stretch).
+   Panelin orijinaldeki 120px yatay iç boşluğu görünürde etkisizdir (içerik
+   zaten ortalanıyor), bu yüzden 0 bırakıldı; kartın taşma güvenlik sınırı da
+   bu sayede panel içerik genişliğinden hesaplanabiliyor.
+
+   Mobilde (≤767px) bu ölçülerin tamamı §16'daki ince şerit bloğu tarafından
+   geçersiz kılınır.
+   -------------------------------------------------------------------------- */
+#container-new-ui .credit-card-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--m-panel-bg);
+    padding: 35px 0 120px;
+    border-radius: 36px;
+    /* Kart genişliği için güvenlik sınırı (taşma olmasın) */
+    container-type: inline-size;
+}
+
+#container-new-ui .credit-card-container p {
+    font-family: var(--m-font);
+    color: #fff;
+    font-weight: 500;
+    margin: 0;
+}
+
+#container-new-ui .credit-card-container .credit-card-container__logo {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    /* Karanlıkta tek parça plaka; negatif margin yerleşimi büyütmez */
+    padding: var(--m-logo-plate-pad);
+    margin: calc(var(--m-logo-plate-pad) * -1);
+    background-color: var(--m-logo-plate-bg);
+    border-radius: var(--m-plate-radius);
+    transition: background-color var(--m-dur) var(--m-ease);
+}
+
+    #container-new-ui .credit-card-container .credit-card-container__logo img {
+        width: 200px;
+        height: auto;
+        margin-bottom: 24px;
+    }
+
+#container-new-ui .credit-card-area {
+    transition: transform 0.6s;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 380px;
+    display: flex;
+    justify-content: center;
+}
+
+#container-new-ui .credit-card-front {
+    display: flex;
+    justify-content: center;
+    width: min(650px, 100cqw);
+    height: 380px;
+    background-image: radial-gradient(100.04% 183.04% at -0.04% 99.9%, #00F77B 0%, rgba(38, 66, 154, 0.89) 66.61%, #0D3C94 100%);
+    border-radius: 40px;
+    position: relative;
+    transition: transform 0.6s;
+    z-index: 1;
+}
+
+#container-new-ui .credit-card-back {
+    display: flex;
+    justify-content: center;
+    width: min(650px, 100cqw);
+    height: 380px;
+    background-image: radial-gradient(100.04% 183.04% at -0.04% 99.9%, #00F77B 0%, rgba(38, 66, 154, 0.89) 66.61%, #0D3C94 100%);
+    border-radius: 40px;
+    position: relative;
+    transform: rotateY(180deg);
+    transition: transform 0.6s;
+    z-index: 1;
+}
+
+#container-new-ui .credit-card-area.is-flipped .credit-card-front {
+    transform: rotateY(180deg);
+}
+
+#container-new-ui .credit-card-area.is-flipped .credit-card-back {
+    transform: rotateY(360deg);
+}
+
+#container-new-ui .credit-card-front,
+#container-new-ui .credit-card-back {
+    position: absolute;
+    /* Dekoratif ışık desenleri kartın dışına taşıyordu; zemin şeffaf olduğu
+       için koyu sayfada leke olarak görünüyordu. Kart sınırına kırpılır —
+       kartın içindeki görünüm orijinaldeki ile aynı kalır. */
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+    #container-new-ui .credit-card-front .credit-card-front__chip {
+        position: absolute;
+        top: 100px;
+        left: 64px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__contactless {
+        position: absolute;
+        top: 30px;
+        right: 44px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-number {
+        position: absolute;
+        bottom: 120px;
+        left: 72px;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__card-number p {
+            font-size: 34px;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__name {
+        position: absolute;
+        bottom: 8px;
+        left: 72px;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__name p {
+            font-size: 21px;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__expiration-date {
+        display: flex;
+        position: absolute;
+        bottom: 68px;
+        right: 180px;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__expiration-date__description {
+            color: #fff;
+            font-size: 12px;
+            line-height: 14px;
+            font-weight: 500;
+            max-width: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        #container-new-ui .credit-card-front .credit-card-front__expiration-date p {
+            font-size: 28px;
+            margin: 0;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-type {
+        position: absolute;
+        bottom: 68px;
+        right: 46px;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__card-type img {
+            width: 70px;
+            height: auto;
+        }
+
+#container-new-ui .credit-card-front__effects__first-svg {
+    position: absolute;
+    left: 0;
+}
+
+#container-new-ui .credit-card-front__effects__second-svg {
+    position: absolute;
+    bottom: 0;
+}
+
+#container-new-ui .credit-card-back .credit-card-back__band {
+    position: absolute;
+    top: 42px;
+    width: 100%;
+    height: 82px;
+    background: #010202;
+}
+
+#container-new-ui .credit-card-back .credit-card-back__cvv {
+    position: absolute;
+    top: 150px;
+    left: 22px;
+    width: 335px;
+    height: 60px;
+    background: #E2E2E0;
+}
+
+    #container-new-ui .credit-card-back .credit-card-back__cvv p {
+        display: flex;
+        justify-content: flex-end;
+        height: 100%;
+        align-items: center;
+        font-size: 26px;
+        color: #000;
+        font-weight: 500;
+        margin-right: 34px;
+    }
+
+#container-new-ui .credit-card-back .credit-card-back__signature {
+    position: absolute;
+    bottom: 38px;
+    right: 44px;
+    width: 122px;
+    height: 78px;
+    background: #E2E2E0;
+    border-radius: 38px;
+}
+
+#container-new-ui .credit-card-upper-left-layer {
+    position: absolute;
+    left: -80px;
+    top: -70px;
+    z-index: 0;
+}
+
+#container-new-ui .credit-card-bottom-left-layer {
+    position: absolute;
+    left: -40px;
+    bottom: -70px;
+    z-index: 0;
+}
+
+#container-new-ui .credit-card-bottom-right-layer {
+    position: absolute;
+    right: -80px;
+    bottom: -70px;
+    z-index: 0;
+}
+
+@media screen and (min-width: 2300px) {
+    #container-new-ui .credit-card-upper-left-layer {
+        left: 40px;
+        top: -70px;
+    }
+
+    #container-new-ui .credit-card-bottom-right-layer {
+        right: 40px;
+        bottom: -70px;
+    }
+}
+
+@media screen and (max-width: 1600px) {
+    #container-new-ui .credit-card-area {
+        width: 490px;
+    }
+
+    #container-new-ui .credit-card-front,
+    #container-new-ui .credit-card-back {
+        width: min(590px, 100cqw);
+        border-radius: 35px;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    #container-new-ui .credit-card-upper-left-layer {
+        left: -40px;
+        top: -70px;
+    }
+
+    #container-new-ui .credit-card-bottom-right-layer {
+        right: -40px;
+        bottom: -70px;
+    }
+}
+
+@media screen and (max-width: 1366px) {
+    #container-new-ui .credit-card-area {
+        width: 500px;
+    }
+
+    #container-new-ui .credit-card-front,
+    #container-new-ui .credit-card-back {
+        width: min(550px, 100cqw);
+        border-radius: 35px;
+    }
+
+    #container-new-ui .credit-card-front__effects__first-svg {
+        left: -2px;
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    #container-new-ui .credit-card-area {
+        width: 100%;
+        height: 300px;
+    }
+
+    #container-new-ui .credit-card-front,
+    #container-new-ui .credit-card-back {
+        width: min(490px, 100cqw);
+        border-radius: 30px;
+        height: 300px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__chip {
+        top: 72px;
+        left: 64px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-number {
+        bottom: 100px;
+        left: 72px;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__card-number p {
+            font-size: 24px;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__name p {
+        font-size: 19px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__expiration-date p {
+        font-size: 24px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__expiration-date__description {
+        font-size: 10px;
+        max-width: 30px;
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-type {
+        bottom: 60px;
+        right: 46px;
+    }
+
+    #container-new-ui .credit-card-back .credit-card-back__band {
+        height: 60px;
+    }
+
+    #container-new-ui .credit-card-back .credit-card-back__cvv {
+        height: 44px;
+    }
+
+        #container-new-ui .credit-card-back .credit-card-back__cvv p {
+            font-size: 22px;
+            margin-right: 24px;
+        }
+
+    #container-new-ui .credit-card-back .credit-card-back__signature {
+        right: 44px;
+        width: 92px;
+        height: 48px;
+        border-radius: 20px;
+    }
+
+    #container-new-ui .credit-card-upper-left-layer,
+    #container-new-ui .credit-card-bottom-left-layer,
+    #container-new-ui .credit-card-bottom-right-layer {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1155px) {
+    #container-new-ui .credit-card-container {
+        padding: 16px;
+    }
+
+    #container-new-ui .credit-card-front,
+    #container-new-ui .credit-card-back {
+        width: min(400px, 100cqw);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   6. ÖDEME ONAYI BİLGİ KARTI
+   -------------------------------------------------------------------------- */
+#container-new-ui .user-info {
+    padding: 0;
+    margin: 0 0 24px;
+    background: transparent;
+}
+
+    /* Başlık + ince ayırıcı çizgi */
+    #container-new-ui .user-info .user-info-top-title,
+    #container-new-ui .card-info .card-info-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 14px;
+        padding: 0;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: var(--m-ink);
+        letter-spacing: -.005em;
+    }
+
+        #container-new-ui .user-info .user-info-top-title::after,
+        #container-new-ui .card-info .card-info-title::after {
+            content: "";
+            flex: 1 1 auto;
+            height: 1px;
+            min-width: 24px;
+            background-image: linear-gradient(90deg, var(--m-line-strong), rgba(201, 210, 230, 0));
+        }
+
+    #container-new-ui .user-info .user-info-container {
+        background: var(--m-surface);
+        border: 1px solid var(--m-line);
+        border-radius: var(--m-radius);
+        box-shadow: var(--m-shadow-sm);
+    }
+
+        #container-new-ui .user-info .user-info-container .container {
+            padding: clamp(16px, 1.8vw, 22px);
+            background: transparent;
+        }
+
+    /* Bootstrap .row negatif margin'i + .row>* gutter'ı bilgi kartını
+       kart bilgileri formuna göre 12px kaydırıyordu; ikisi birlikte sıfırlanır
+       ki başlıklar ve kart kenarları aynı hizada başlasın. */
+    #container-new-ui .user-info .row {
+        margin: 0;
+    }
+
+        #container-new-ui .user-info .row > [class*="col-"],
+        #container-new-ui .user-info .row > .user-info-container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        #container-new-ui .user-info .user-info-container .row > [class*="col-"] {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+#container-new-ui .user-info-row {
+    margin: 0;
+}
+
+    #container-new-ui .user-info-row .user-info-title {
+        margin: 0 0 5px;
+        font-size: 11.5px;
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: .045em;
+        color: var(--m-muted);
+    }
+
+    #container-new-ui .user-info-row .user-info-text {
+        color: var(--m-ink);
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+        /* Tutar: sayfanın en güçlü sayısal öğesi */
+        #container-new-ui .user-info-row .user-info-text.payment-amount {
+            font-size: clamp(19px, 1.5vw, 23px);
+            font-weight: 700;
+            letter-spacing: -.015em;
+            color: var(--m-accent);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Ödeme tipi: küçük durum etiketi */
+        #container-new-ui .user-info-row .user-info-text.payment-method {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 11px;
+            border-radius: 999px;
+            background: var(--m-surface-3);
+            color: var(--m-accent);
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+
+/* Izgara ayırıcıları: masaüstünde dikey + yatay, mobilde yatay */
+#container-new-ui .user-info-container .container > .row > div + div .user-info-row {
+    border-top: 1px solid var(--m-line);
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+#container-new-ui .user-info-container .container > .row + .row .user-info-row {
+    border-top: 1px solid var(--m-line);
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+@media (min-width: 992px) {
+    #container-new-ui .user-info-container .container > .row > div + div .user-info-row {
+        border-top: 0;
+        border-left: 1px solid var(--m-line);
+        padding: 0 0 0 22px;
+        margin: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   7. KART BİLGİLERİ FORMU
+   -------------------------------------------------------------------------- */
+#container-new-ui .card-info {
+    padding: 0;
+    margin: 0 0 8px;
+    background: transparent;
+}
+
+    #container-new-ui .card-info .row {
+        margin: 0;
+    }
+
+        #container-new-ui .card-info .row > [class*="col-"] {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+/* --- Alan grubu: dört alan tek bir kontrol gibi görünür --- */
+#container-new-ui .card-info .form-floating {
+    width: 100%;
+}
+
+#container-new-ui .card-info .form-floating > .form-control {
+    height: 3.4rem;
+    min-height: 3.4rem;
+    padding: 1.55rem .95rem .5rem;
+    border: 1px solid var(--m-line-strong);
+    border-radius: 0;
+    background-color: var(--m-surface);
+    color: var(--m-ink);
+    font-family: var(--m-font);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.25;
+    box-shadow: none;
+    transition: border-color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease), background-color var(--m-dur) var(--m-ease);
+}
+
+/* Bootstrap'ın doldurulmuş/odaklı alan için uyguladığı padding'i (0,3,0)
+   aynı özgüllükte ezip kendi ölçümüzü koruyoruz. */
+#container-new-ui .card-info .form-floating > .form-control:focus,
+#container-new-ui .card-info .form-floating > .form-control:not(:placeholder-shown) {
+    padding-top: 1.55rem;
+    padding-bottom: .5rem;
+}
+
+#container-new-ui .card-info .form-floating > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    margin: 0;
+    padding: 1.3rem .95rem .5rem;
+    border: 0;
+    overflow: visible;
+    color: var(--m-muted);
+    font-family: var(--m-font);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: .01em;
+    pointer-events: none;
+    transform-origin: 0 0;
+    transition: transform var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease);
+}
+
+    /* Bootstrap'ın label arkasına koyduğu beyaz maske gerekmiyor */
+    #container-new-ui .card-info .form-floating > label::after {
+        display: none;
+    }
+
+#container-new-ui .card-info .form-floating > .form-control:focus ~ label,
+#container-new-ui .card-info .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--m-accent);
+    font-weight: 700;
+    letter-spacing: .02em;
+    transform: scale(.76) translateY(-.72rem);
+}
+
+/* Placeholder metni gizle: etiket zaten alanın içinde duruyor.
+   :placeholder-shown eşleşmesi placeholder niteliğine bağlı olduğu için
+   bu gizleme float davranışını bozmaz. */
+#container-new-ui .card-info .form-floating > .form-control::placeholder {
+    color: transparent;
+    opacity: 0;
+}
+
+/* Grup köşeleri */
+#container-new-ui .card-info .top-input .form-control {
+    border-radius: var(--m-r-card) var(--m-r-card) 0 0;
+    border-bottom: 0;
+}
+
+#container-new-ui .card-info .mid-input .form-control {
+    border-bottom: 0;
+}
+
+#container-new-ui .card-info .bottom-left-input .form-control {
+    border-radius: 0 0 0 var(--m-r-card);
+    border-right: 0;
+}
+
+#container-new-ui .card-info .bottom-right-input .form-control {
+    border-radius: 0 0 var(--m-r-card) 0;
+}
+
+/* Odak durumu — grup çerçevesini bozmadan alanı öne çıkarır */
+#container-new-ui .card-info .form-control:focus {
+    position: relative;
+    z-index: 2;
+    border-color: var(--m-accent);
+    background-color: var(--m-surface);
+    box-shadow: inset 0 0 0 1px var(--m-accent), var(--m-ring);
+    outline: none;
+}
+
+#container-new-ui .card-info .form-control:hover:not(:focus):not(:disabled) {
+    border-color: var(--m-line-hover);
+}
+
+#container-new-ui .card-info .form-control:disabled {
+    background-color: var(--m-surface-3);
+    color: var(--m-muted);
+    cursor: not-allowed;
+}
+
+/* Chrome otomatik doldurma zemini temayı ezmesin */
+#container-new-ui .card-info .form-control:-webkit-autofill,
+#container-new-ui .card-info .form-control:-webkit-autofill:hover,
+#container-new-ui .card-info .form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--m-ink);
+    -webkit-box-shadow: inset 0 0 0 1000px var(--m-surface);
+    box-shadow: inset 0 0 0 1000px var(--m-surface);
+    transition: background-color 9999s ease-out;
+}
+
+/* Kart numarası alanı: rakam hizası ve harf aralığı */
+#container-new-ui .card-info .card-number {
+    letter-spacing: .06em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Ay/Yıl + CVC satırı */
+#container-new-ui .card-info .form-card-cvc {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+}
+
+    #container-new-ui .card-info .form-card-cvc .form-floating {
+        width: 100%;
+    }
+
+    /* Satır içi style="font-size:15px" bu etikette bulunuyor */
+    #container-new-ui .card-info .bottom-right-input > label {
+        font-size: 15px !important;
+    }
+
+    #container-new-ui .card-info .bottom-right-input > .form-control:focus ~ label,
+    #container-new-ui .card-info .bottom-right-input > .form-control:not(:placeholder-shown) ~ label {
+        font-size: 15px !important;
+    }
+
+/* --- Uyarı / bilgi satırları --- */
+/* Yalnızca hata çipi / banka adı satırındaki sarmalayıcı.
+   .mid-input sınıfı aynı zamanda KART NUMARASI alanında da var; ona margin
+   verilirse alan gruptan kopar. Bu yüzden seçici doğrudan .row çocuğu ile
+   sınırlandı. */
+#container-new-ui .card-info .row > .form-floating.mid-input {
+    display: block;
+    margin: 12px 0 0;
+    padding: 0;
+}
+
+/* Kart numarası alanı grupta bitişik kalır */
+#container-new-ui .card-info .col-md-12 > .form-floating.mid-input {
+    margin: 0;
+    padding: 0;
+}
+
+#container-new-ui .card-info .mokabluetxt:not(.check-contract-area-kvkk) {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 14px 0 0;
+    color: var(--m-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+    #container-new-ui .card-info .mokabluetxt:not(.check-contract-area-kvkk)::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--m-mint-ink);
+        box-shadow: 0 0 0 3px var(--m-mint-soft);
+    }
+
+#container-new-ui .card-info .custom-card-label {
+    margin: 0;
+    font-size: 13px !important;
+    font-weight: 600;
+    color: var(--m-ink-2);
+}
+
+/* Hatalı kart numarası → hata çipi (inline style="color:red" ezilir) */
+#wrongCard {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--m-danger-line);
+    border-radius: var(--m-radius-xs);
+    background: var(--m-danger-bg);
+    color: var(--m-danger) !important;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+    #wrongCard::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--m-danger);
+    }
+
+/* Banka adı (BIN sorgusundan JS doldurur) — boşken görünmez.
+   Markup'taki inline style="display:none" bilinçli olarak ezilir:
+   kart numarası tanındığında banka adı küçük bir etiket olarak görünür.
+   Bu davranışı istemiyorsanız bu bloğu silin. */
+#cardBankNameDivId {
+    display: none;
+}
+
+    #cardBankNameDivId:not(:empty) {
+        display: inline-flex !important;
+        align-items: center;
+        margin: 10px 0 0;
+        padding: 4px 10px;
+        border: 1px solid var(--m-line);
+        border-radius: 999px;
+        background: var(--m-surface-2);
+        color: var(--m-accent);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .02em;
+    }
+
+/* --- KVKK onayı --- */
+#container-new-ui .check-contract-area-kvkk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 14px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+    /* Metin kutuyu sarmasa da onay kutusuyla aynı satırda kalır */
+    #container-new-ui .check-contract-area-kvkk > a {
+        flex: 1 1 240px;
+        min-width: 0;
+    }
+
+    /* Orijinaldeki gibi standart bağlantı mavisi (Bootstrap --bs-link-color)
+       ve altı çizili; metnin tamamı link rengini taşır. */
+    #container-new-ui .check-contract-area-kvkk a {
+        color: var(--bs-link-color, #0d6efd);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+        #container-new-ui .check-contract-area-kvkk a:hover {
+            color: var(--bs-link-hover-color, #0a58ca);
+        }
+
+    /* Metindeki gereksiz satır kırıkları */
+    #container-new-ui .check-contract-area-kvkk a br {
+        display: none;
+    }
+
+    #container-new-ui .check-contract-area-kvkk input[type="checkbox"] {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 0 0 auto;
+        width: 19px;
+        height: 19px;
+        margin: 1px 0 0;
+        border: 1.5px solid var(--m-line-strong);
+        border-radius: 6px;
+        background: var(--m-surface);
+        position: relative;
+        cursor: pointer;
+        transition: background-color var(--m-dur) var(--m-ease), border-color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+    }
+
+        #container-new-ui .check-contract-area-kvkk input[type="checkbox"]:hover {
+            border-color: var(--m-accent);
+        }
+
+        #container-new-ui .check-contract-area-kvkk input[type="checkbox"]:checked {
+            background: var(--m-control-active);
+            border-color: var(--m-control-active);
+        }
+
+            #container-new-ui .check-contract-area-kvkk input[type="checkbox"]:checked::after {
+                content: "";
+                position: absolute;
+                left: 5.5px;
+                top: 1.5px;
+                width: 5px;
+                height: 10px;
+                border: solid #fff;
+                border-width: 0 2.2px 2.2px 0;
+                transform: rotate(45deg);
+            }
+
+        #container-new-ui .check-contract-area-kvkk input[type="checkbox"]:focus-visible {
+            box-shadow: var(--m-ring);
+            border-color: var(--m-accent);
+            outline: none;
+        }
+
+    #container-new-ui .check-contract-area-kvkk .field-validation-error {
+        flex: 1 0 100%;
+        margin: 2px 0 0;
+        color: var(--m-danger);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+/* jQuery validate hata durumları (diğer Moka sayfalarıyla uyumlu) */
+.field-validation-error,
+.text-danger {
+    color: var(--m-danger);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.input-validation-error {
+    border-color: var(--m-danger-line) !important;
+    background-color: var(--m-danger-bg) !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. BUTONLAR
+   -------------------------------------------------------------------------- */
+#container-new-ui .bottom-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 12px;
+    margin: 22px 0 0;
+    padding: 22px 0 0;
+    border-top: 1px solid var(--m-line);
+}
+
+    #container-new-ui .bottom-buttons > .payment-btn {
+        flex: 1 1 240px;
+        width: auto;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #container-new-ui .bottom-buttons .row {
+        margin: 0;
+    }
+
+    #container-new-ui .bottom-buttons .payment-btn [class*="col-"] {
+        width: 100%;
+        padding: 0;
+    }
+
+    /* İki satırlık inline `font-size:18px` stillerini nötrler */
+    #container-new-ui .bottom-buttons .btn {
+        font-size: 16px !important;
+    }
+
+#container-new-ui .bottom-buttons .btn,
+#container-new-ui .commonPaymentPageEftButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 54px;
+    padding: 12px 22px;
+    border: 1px solid transparent;
+    /* Orijinaldeki gibi: Bootstrap .btn varsayılanı (--bs-border-radius = 6px) */
+    border-radius: 6px;
+    font-family: var(--m-font);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: .01em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .16s var(--m-ease), box-shadow var(--m-dur) var(--m-ease), background-color var(--m-dur) var(--m-ease), border-color var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease);
+}
+
+/* Her iki düğme de orijinaldeki gibi dolu mokablue (#223886).
+   Hover/active davranışı mokacustom.css'teki .btn-default kuralıyla aynı:
+   aynı zemin, opacity .9. */
+#container-new-ui #commonPaymentPageButton,
+#container-new-ui .commonPaymentPageEftButton,
+#container-new-ui .mobile-payment a.btn {
+    background-image: none;
+    background-color: #223886;
+    border: 1px solid #223886;
+    color: #fff;
+    box-shadow: none;
+}
+
+    #container-new-ui #commonPaymentPageButton:hover,
+    #container-new-ui .commonPaymentPageEftButton:hover,
+    #container-new-ui .mobile-payment a.btn:hover {
+        background-color: #223886;
+        border-color: #223886;
+        color: #fff;
+        opacity: .9;
+        transform: none;
+        box-shadow: none;
+    }
+
+    #container-new-ui #commonPaymentPageButton:active,
+    #container-new-ui .commonPaymentPageEftButton:active,
+    #container-new-ui .mobile-payment a.btn:active {
+        background-color: #223886;
+        border-color: #223886;
+        opacity: .9;
+        transform: none;
+        box-shadow: none;
+    }
+
+    #container-new-ui #commonPaymentPageButton:focus-visible,
+    #container-new-ui .commonPaymentPageEftButton:focus-visible,
+    #container-new-ui .mobile-payment a.btn:focus-visible {
+        outline: 2px solid #223886;
+        outline-offset: 2px;
+    }
+
+    #container-new-ui #commonPaymentPageButton:disabled,
+    #container-new-ui #commonPaymentPageButton.disabled,
+    #container-new-ui .commonPaymentPageEftButton:disabled {
+        background-color: var(--m-disabled-bg);
+        border-color: var(--m-disabled-bg);
+        color: var(--m-disabled-ink);
+        cursor: not-allowed;
+        opacity: 1;
+    }
+
+    #container-new-ui #commonPaymentPageButton svg {
+        flex: 0 0 auto;
+        width: 1em;
+        height: 1em;
+        margin: 0 !important;
+        opacity: .92;
+    }
+
+/* --------------------------------------------------------------------------
+   9. ALT LOGO ŞERİDİ
+   -------------------------------------------------------------------------- */
+#container-new-ui .footer-container {
+    display: flex;
+    margin: 24px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--m-line);
+}
+
+#container-new-ui .footer-container-logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    width: fit-content;
+    margin: 0 0 0 auto;
+    background: var(--m-plate-bg);
+    padding: var(--m-plate-pad);
+    border-radius: var(--m-plate-radius);
+    transition: background-color var(--m-dur) var(--m-ease);
+}
+
+    #container-new-ui .footer-container-logos img {
+        height: 26px;
+        width: auto;
+        max-width: 90px;
+        object-fit: contain;
+        opacity: .92;
+        margin: 0;
+    }
+
+/* --------------------------------------------------------------------------
+   10. SEKMELER (kayıtlı kart olduğunda görünür — jquery-ui ezilir)
+   -------------------------------------------------------------------------- */
+#tabs {
+    position: relative;
+}
+
+#tabUL {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 0;
+    padding: 8px;
+    list-style: none;
+    background: var(--m-surface-3);
+    border: 0;
+    border-radius: var(--m-radius);
+}
+
+#tabs #tabUL.ui-tabs-nav {
+    background: var(--m-surface-3);
+    border: 0;
+    border-radius: var(--m-radius);
+}
+
+#tabUL li {
+    margin: 0;
+    border: 0;
+    background: transparent;
+}
+
+    #tabUL li a.tab {
+        display: block;
+        padding: 10px 18px;
+        border: 0;
+        border-radius: var(--m-radius-xs);
+        background: transparent;
+        color: var(--m-ink-2);
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+    }
+
+        #tabUL li a.tab:hover {
+            background: var(--m-hover-strong);
+            color: var(--m-accent);
+        }
+
+    #tabUL li.ui-tabs-active a.tab,
+    #tabUL li a.tab.active {
+        background: var(--m-surface);
+        color: var(--m-accent);
+        box-shadow: var(--m-shadow-sm);
+    }
+
+#tabs .ui-tabs-panel {
+    padding: 0;
+}
+
+#tabs-2 .check-contract-area-kvkk,
+#tabs-2 .mokabluetxt-bg label {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+#tabs-2 .table-responsive {
+    display: flex;
+    justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   11. KAYITLI KART TABLOSU (çoklu kart varyantı)
+   -------------------------------------------------------------------------- */
+.saveCardTable {
+    border: 1px solid var(--m-line);
+    border-radius: var(--m-radius-sm);
+    max-height: 300px;
+    overflow: auto;
+    text-align: center;
+}
+
+#trForHiddenCard > td {
+    border: 1px solid var(--m-line);
+    padding: 10px;
+    cursor: pointer;
+}
+
+#trForHiddenCard:hover {
+    color: var(--m-accent);
+}
+
+.selected,
+.selected td {
+    background-color: var(--m-navy);
+    color: #fff;
+}
+
+.table {
+    --bs-table-color: revert !important;
+    --bs-table-bg: revert !important;
+    --bs-table-striped-color: revert !important;
+}
+
+.msg-label {
+    width: 100%;
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border: 1px solid var(--m-danger-line);
+    border-radius: var(--m-radius-sm);
+    background: var(--m-danger-bg);
+    color: var(--m-danger-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   12. HAVALE / EFT (transfer-payment)
+   -------------------------------------------------------------------------- */
+#eftContainer .eft-area {
+    padding: 4px 0 8px;
+}
+
+.transfer-payment {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.transfer-payment__block {
+    margin: 0;
+    padding: 15px 17px;
+    background: var(--m-surface);
+    border: 1px solid var(--m-line);
+    border-radius: var(--m-radius-sm);
+    box-shadow: var(--m-shadow-sm);
+}
+
+.transfer-payment__block--header {
+    background-image: linear-gradient(135deg, var(--m-info-bg) 0%, var(--m-info-bg-strong) 100%);
+    border-color: var(--m-info-line);
+    box-shadow: none;
+}
+
+.transfer-payment__block--warning {
+    background: var(--m-warn-bg);
+    border-color: var(--m-warn-line);
+    box-shadow: none;
+}
+
+.transfer-payment__block--success {
+    background: var(--m-success-bg);
+    border-color: var(--m-success-line);
+    color: var(--m-success);
+    font-size: 13.5px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.transfer-payment__block--error {
+    background: var(--m-danger-bg);
+    border-color: var(--m-danger-line);
+    color: var(--m-danger);
+    font-size: 13.5px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.transfer-payment__title {
+    margin: 0 0 4px;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--m-ink);
+}
+
+.transfer-payment__desc {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--m-ink-2);
+}
+
+.transfer-payment__reference-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.transfer-payment__reference-label {
+    margin: 0 0 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--m-muted);
+}
+
+.transfer-payment__reference-value {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--m-accent);
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.transfer-payment__copy-btn {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    border: 1px solid var(--m-info-line);
+    border-radius: var(--m-radius-xs);
+    background: var(--m-info-bg);
+    color: var(--m-accent);
+    font-family: var(--m-font);
+    font-size: 12px !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--m-dur) var(--m-ease), border-color var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease);
+}
+
+    .transfer-payment__copy-btn:hover {
+        background: var(--m-info-bg-strong);
+        border-color: var(--m-line-hover);
+    }
+
+    .transfer-payment__copy-btn:active {
+        background: var(--m-info-line);
+    }
+
+    .transfer-payment__copy-btn:focus-visible {
+        outline: none;
+        box-shadow: var(--m-ring), 0 0 0 1px var(--m-accent);
+    }
+
+.transfer-payment__copy-btn--copied {
+    background: var(--m-success-bg);
+    border-color: var(--m-success-line);
+    color: var(--m-success);
+}
+
+.transfer-payment__iban-label {
+    margin: 0 0 2px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--m-muted);
+}
+
+.transfer-payment__iban-value {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--m-ink);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.transfer-payment__iban-sub {
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    color: var(--m-muted);
+    max-width: 92%;
+}
+
+.transfer-payment__warning-title {
+    margin: 0 0 3px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--m-warn);
+}
+
+.transfer-payment__warning-text {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--m-warn-ink);
+}
+
+.transfer-payment__amount-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.transfer-payment__amount-label {
+    font-size: 12.5px;
+    color: var(--m-muted);
+}
+
+.transfer-payment__amount-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--m-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.transfer-payment__iban-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.transfer-payment__select-wrapper {
+    position: relative;
+    margin-top: 4px;
+}
+
+.transfer-payment__select {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 11px 34px 11px 12px;
+    border: 1px solid var(--m-line-strong);
+    border-radius: var(--m-radius-sm);
+    background-color: var(--m-surface);
+    background-image: var(--m-chevron);
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    color: var(--m-ink);
+    font-family: var(--m-font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+}
+
+    .transfer-payment__select:hover {
+        border-color: var(--m-line-hover);
+    }
+
+    .transfer-payment__select:focus {
+        outline: none;
+        border-color: var(--m-accent);
+        box-shadow: var(--m-ring-navy);
+    }
+
+    .transfer-payment__select option:disabled {
+        color: var(--m-muted);
+    }
+
+.transfer-payment__iban-box {
+    margin-top: 10px;
+    background: var(--m-surface-2);
+    border: 1px solid var(--m-line);
+    animation: mokaFadeInBox .22s var(--m-ease);
+}
+
+@keyframes mokaFadeInBox {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Banka seçimi (özel select) */
+.custom-select {
+    position: relative;
+    margin-top: 4px;
+    font-size: 13px;
+}
+
+.custom-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--m-line-strong);
+    border-radius: var(--m-radius-sm);
+    background: var(--m-surface);
+    color: var(--m-ink);
+    font-family: var(--m-font);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+}
+
+    .custom-select__trigger:hover {
+        border-color: var(--m-line-hover);
+    }
+
+    .custom-select__trigger:focus-visible {
+        outline: none;
+        border-color: var(--m-accent);
+        box-shadow: var(--m-ring-navy);
+    }
+
+.custom-select__trigger-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--m-muted);
+    font-weight: 400;
+}
+
+    .custom-select__trigger-text:not(.placeholder) {
+        color: var(--m-ink);
+    }
+
+.custom-select__arrow {
+    flex: 0 0 auto;
+    margin-left: 8px;
+    transition: transform var(--m-dur) var(--m-ease);
+}
+
+.custom-select.open .custom-select__trigger {
+    border-color: var(--m-accent);
+    box-shadow: var(--m-ring-navy);
+}
+
+.custom-select.open .custom-select__arrow {
+    transform: rotate(180deg);
+}
+
+.custom-select__options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+    border: 1px solid var(--m-line);
+    border-radius: var(--m-radius-sm);
+    background: var(--m-surface);
+    box-shadow: var(--m-shadow);
+}
+
+.custom-select.open .custom-select__options {
+    display: block;
+}
+
+.custom-select__option {
+    padding: 9px 10px;
+    border-radius: var(--m-radius-xs);
+    color: var(--m-ink);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .12s var(--m-ease);
+}
+
+    .custom-select__option:hover {
+        background: var(--m-surface-3);
+    }
+
+    .custom-select__option.selected {
+        background: var(--m-info-bg);
+        color: var(--m-accent);
+        font-weight: 700;
+    }
+
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 0;
+    color: var(--m-muted);
+    font-size: 12.5px;
+}
+
+    .loading-spinner::before {
+        content: "";
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--m-line-strong);
+        border-top-color: var(--m-accent);
+        border-radius: 50%;
+        animation: mokaSpin .7s linear infinite;
+    }
+
+@keyframes mokaSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   13. MODALLAR (şifre belirleme / şifre girme)
+   -------------------------------------------------------------------------- */
+.modal-content {
+    background-color: var(--m-surface);
+    border: 0;
+    border-radius: 20px;
+    box-shadow: var(--m-shadow-lg);
+    overflow: hidden;
+}
+
+.modal-content#modalWidth {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 0;
+    top: auto;
+    bottom: auto;
+    justify-content: normal;
+    z-index: auto;
+}
+
+.modal-header {
+    position: relative;
+    padding: 18px 60px 18px 22px;
+    border-bottom: 1px solid var(--m-line);
+    background-image: linear-gradient(180deg, var(--m-header-bg), var(--m-header-bg-2));
+}
+
+    .modal-header .modal-title {
+        margin: 0;
+        font-size: 15.5px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--m-ink);
+        letter-spacing: -.005em;
+    }
+
+.modal-body {
+    padding: 22px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--m-line);
+}
+
+    .modal-footer .btn {
+        background-color: #223886;
+        color: #fff;
+        min-height: 44px;
+        padding: 10px 22px;
+        border: 1px solid #223886;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+/* BS5'te .close sınıfı yok — kapatma düğmesini kendimiz çiziyoruz */
+.password-control-modal-button {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--m-surface-3);
+    color: var(--m-accent);
+    font-family: var(--m-font);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    text-shadow: none;
+    opacity: 1;
+    cursor: pointer;
+    transition: background-color var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease);
+}
+
+    .password-control-modal-button:hover {
+        background: var(--m-hover);
+        color: var(--m-accent-strong);
+    }
+
+    .password-control-modal-button:focus-visible {
+        outline: none;
+        box-shadow: var(--m-ring);
+    }
+
+.modal .row {
+    margin-bottom: 0;
+}
+
+/* Markup'taki <br><br> boşluğu yerine form-grup aralığı kullanılır */
+.modal-body .row > br {
+    display: none;
+}
+
+.modal .form-group {
+    display: flex;
+    flex: 1 0 100%;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 14px;
+}
+
+    .modal .form-group > label {
+        flex: 0 0 38%;
+        margin: 0;
+        color: var(--m-muted);
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.35;
+    }
+
+    .modal .form-group > [class*="col-"] {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: 100%;
+        padding: 0;
+    }
+
+.modal .form-control {
+    height: 46px;
+    padding: 10px 14px;
+    border: 1px solid var(--m-line-strong);
+    border-radius: var(--m-radius-sm);
+    background: var(--m-surface);
+    color: var(--m-ink);
+    font-family: var(--m-font);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: none;
+    transition: border-color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+}
+
+    .modal .form-control:focus {
+        border-color: var(--m-accent);
+        background: var(--m-surface);
+        box-shadow: var(--m-ring-navy);
+        outline: none;
+    }
+
+    .modal .form-control::placeholder {
+        color: var(--m-muted);
+        opacity: 1;
+    }
+
+/* --------------------------------------------------------------------------
+   14. TAKSİT SEÇENEKLERİ (bu sayfada kapalı, diğer Moka sayfaları için korunur)
+   -------------------------------------------------------------------------- */
+.installment-options {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--m-line);
+    border-radius: var(--m-radius-sm);
+    background: var(--m-surface);
+}
+
+    .installment-options h3 {
+        font-size: 16px;
+        color: var(--m-ink);
+    }
+
+    .installment-options .installment-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--m-line);
+        cursor: pointer;
+    }
+
+        .installment-options .installment-option:last-child {
+            border-bottom: none;
+        }
+
+        .installment-options .installment-option input[type="radio"] {
+            margin: 0 8px 0 0;
+            accent-color: var(--m-navy);
+        }
+
+        .installment-options .installment-option span {
+            color: var(--m-ink-2);
+            font-size: 14px;
+        }
+
+        .installment-options .installment-option .price {
+            margin-left: auto;
+            font-weight: 700;
+            color: var(--m-ink);
+        }
+
+        .installment-options .installment-option:hover {
+            background: var(--m-surface-2);
+            border-radius: 6px;
+        }
+
+/* Ödeme yöntemi sekmeleri (kart / EFT geçişi olan varyantlar) */
+.payment-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 0 32px 20px;
+    padding: 4px;
+    background: var(--m-surface-3);
+    border-radius: var(--m-radius-sm);
+}
+
+.payment-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--m-radius-xs);
+    background: transparent;
+    color: var(--m-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--m-dur) var(--m-ease), color var(--m-dur) var(--m-ease), box-shadow var(--m-dur) var(--m-ease);
+}
+
+    .payment-tab svg {
+        flex: 0 0 auto;
+        opacity: .7;
+        transition: opacity var(--m-dur) var(--m-ease);
+    }
+
+    .payment-tab:hover:not(.active) {
+        color: var(--m-ink-2);
+        background: var(--m-hover);
+    }
+
+    .payment-tab.active {
+        background: var(--m-surface);
+        color: var(--m-ink);
+        box-shadow: var(--m-shadow-sm);
+    }
+
+        .payment-tab.active svg {
+            opacity: 1;
+        }
+
+/* --------------------------------------------------------------------------
+   15. YARDIMCI SINIFLAR (geriye dönük uyumluluk — korunur)
+   -------------------------------------------------------------------------- */
+.mask-type-luminance {
+    mask-type: luminance;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+.text-transform-uppercase {
+    text-transform: uppercase;
+}
+
+.fs-14 {
+    font-size: 14px;
+}
+
+.fs-15 {
+    font-size: 15px;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.fs-17 {
+    font-size: 17px;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.mokabluetxt {
+    color: #004d8d;
+}
+
+/* Diğer Moka sayfalarında kullanılan marka renkleri */
+.mokablue {
+    background: var(--m-navy);
+    color: #fff;
+    font-size: 14px;
+}
+
+.green {
+    background: #7ed321;
+    color: #fff;
+}
+
+.blue {
+    background: var(--m-navy);
+    color: #fff;
+}
+
+.greentxt {
+    color: #7ed321;
+}
+
+.gsm {
+    background: #2574a9;
+    border: 0;
+}
+
+.darkblue {
+    background: #063760;
+    color: #fff;
+}
+
+.white {
+    color: #fff;
+}
+
+.btn-default:hover {
+    background: var(--m-navy);
+    border-color: var(--m-navy);
+    color: #fff;
+    opacity: .94;
+}
+
+/* --------------------------------------------------------------------------
+   16. DUYARLI AYARLAR
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199px) {
+    #tabs-1 > [class*="col-"] {
+        flex: 1 1 460px;
+    }
+}
+
+@media (max-width: 991px) {
+    #tabs {
+        padding: 0 16px;
+    }
+
+    #tabs-1 {
+        gap: 20px;
+        padding: 20px 0 0;
+    }
+}
+
+@media (max-width: 767px) {
+    #container-new-ui .credit-card-container {
+        border-radius: 22px;
+    }
+
+    #container-new-ui .credit-card-upper-left-layer,
+    #container-new-ui .credit-card-bottom-right-layer {
+        display: none;
+    }
+
+    #container-new-ui .footer-container-logos {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #container-new-ui .footer-container {
+        justify-content: center;
+    }
+
+    #container-new-ui .bottom-buttons > .payment-btn {
+        flex: 1 1 100%;
+    }
+
+    #container-new-ui .mobile-payment {
+        margin-bottom: 0;
+    }
+}
+
+/* --- Telefon / küçük tablet: marka bloğu tek satırlık ince şerit --------
+   Bu blok §5'teki orijinal masaüstü ölçülerini (px) geçersiz kılar: kart panelin
+   içerik genişliğinden türetilir, logo sola geçer ve tüm iç öğeler --w ile ölçeklenir. */
+@media (max-width: 767px) {
+    #tabs-1 {
+        padding-top: 14px;
+        gap: 14px;
+    }
+
+    #container-new-ui .credit-card-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 12px 14px;
+        border-radius: 20px;
+    }
+
+    #container-new-ui .credit-card-container .credit-card-container__logo img {
+        width: 104px;
+        margin-bottom: 0;
+    }
+
+    #container-new-ui .credit-card-area {
+        width: var(--w);
+        height: var(--h);
+        margin: 0;
+        /* Kart = panel içerik genişliği − (logo + boşluk), en fazla 320px */
+        --w: min(calc(100cqw - 118px), 320px);
+        --h: calc(var(--w) * .5846);
+    }
+
+    /* cqw desteklemeyen tarayıcılar için yedek ölçü */
+    @supports not (width: 1cqw) {
+        #container-new-ui .credit-card-area {
+            --w: min(320px, max(120px, 100vw - 190px));
+        }
+    }
+
+    #container-new-ui .credit-card-front,
+    #container-new-ui .credit-card-back {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: calc(var(--w) * .062);
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__chip {
+        top: 26.3%;
+        left: 9.8%;
+        width: calc(var(--w) * .1030);
+        height: calc(var(--w) * .0815);
+    }
+
+    #container-new-ui .credit-card-front .credit-card-front__contactless {
+        top: 7.9%;
+        right: 6.8%;
+        width: calc(var(--w) * .0630);
+        height: calc(var(--w) * .0785);
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__chip > svg,
+        #container-new-ui .credit-card-front .credit-card-front__contactless > svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-number {
+        left: 11%;
+        bottom: 29%;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__card-number p {
+            font-size: calc(var(--w) * .064);
+            letter-spacing: .02em;
+            white-space: nowrap;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__name {
+        left: 11%;
+        bottom: 5.5%;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__name p {
+            font-size: calc(var(--w) * .05);
+            letter-spacing: .04em;
+            white-space: nowrap;
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__expiration-date {
+        right: 27.7%;
+        bottom: 15.8%;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__expiration-date__description {
+            font-size: calc(var(--w) * .028);
+            line-height: 1.15;
+            max-width: calc(var(--w) * .075);
+        }
+
+        #container-new-ui .credit-card-front .credit-card-front__expiration-date p {
+            font-size: calc(var(--w) * .058);
+            margin-left: calc(var(--w) * .018);
+        }
+
+    #container-new-ui .credit-card-front .credit-card-front__card-type {
+        right: 7%;
+        bottom: 16.5%;
+    }
+
+        #container-new-ui .credit-card-front .credit-card-front__card-type img {
+            width: auto;
+            height: calc(var(--w) * .075);
+            max-width: calc(var(--w) * .145);
+            object-fit: contain;
+        }
+
+    #container-new-ui .credit-card-front__effects__first-svg {
+        left: 0;
+        width: calc(var(--w) * .5323);
+        height: auto;
+    }
+
+    #container-new-ui .credit-card-front__effects__second-svg {
+        left: 0;
+        bottom: 0;
+        width: calc(var(--w) * .4923);
+        height: auto;
+    }
+
+    #container-new-ui .credit-card-back .credit-card-back__band {
+        top: 11%;
+        height: 21.6%;
+    }
+
+    #container-new-ui .credit-card-back .credit-card-back__cvv {
+        top: 39.5%;
+        left: 3.4%;
+        width: 51.5%;
+        height: 15.8%;
+    }
+
+        #container-new-ui .credit-card-back .credit-card-back__cvv p {
+            font-size: calc(var(--w) * .04);
+            margin-right: calc(var(--w) * .052);
+        }
+
+    #container-new-ui .credit-card-back .credit-card-back__signature {
+        right: 6.8%;
+        bottom: 10%;
+        width: 18.8%;
+        height: 20.5%;
+        border-radius: calc(var(--w) * .058);
+    }
+}
+
+@media (max-width: 479px) {
+    #container-new-ui .credit-card-container {
+        padding: 12px 14px 14px;
+        gap: 12px;
+    }
+
+    #container-new-ui .credit-card-container .credit-card-container__logo img {
+        width: 96px;
+    }
+
+    #container-new-ui .credit-card-area {
+        --w: min(calc(100cqw - 108px), 320px);
+    }
+
+    @supports not (width: 1cqw) {
+        #container-new-ui .credit-card-area {
+            --w: min(300px, max(110px, 100vw - 180px));
+        }
+    }
+
+    #container-new-ui .user-info-row .user-info-text {
+        font-size: 14px;
+    }
+
+    #container-new-ui .footer-container-logos img {
+        height: 20px;
+        max-width: 66px;
+    }
+
+    .modal .form-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+        .modal .form-group > label {
+            flex: 1 1 auto;
+        }
+}
+
+/* --------------------------------------------------------------------------
+   17. KARANLIK TEMA
+   --------------------------------------------------------------------------
+   İki yolla açılır:
+     · İşletim sistemi tercihi  →  @media (prefers-color-scheme: dark)
+     · Zorunlu karanlık         →  <html data-moka-theme="dark">
+   <html data-moka-theme="light"> ise otomatik karanlığı kapatır (her koşulda
+   açık tema isteyen iş yerleri için).data-* niteliğini JS ile değiştirmek
+   yeterlidir; markup'ta hiçbir şey değişmez.
+
+   Tema yalnızca :root üzerindeki --m-* token'larını yeniden bağlar. Bileşen
+   kurallarında renk sabiti kalmadığı için tek tek bileşen ezmeye gerek yok.
+
+   NOT: İki tetikleyici de aynı eşlemeyi kullanır. CSS'te "medya sorgusu VEYA
+   nitelik" tek blokta ifade edilemediği için blok iki kez yazıldı; değerler
+   burada tek yerde duruyor.
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-moka-theme="light"]) {
+        color-scheme: dark;
+        --m-ink: #e9edf8;
+        --m-ink-2: #c2cbe2;
+        --m-muted: #98a3bf;
+        --m-surface: #151c31;
+        --m-surface-2: #0b1020;
+        --m-surface-3: #1f2842;
+        --m-line: #27314c;
+        --m-line-strong: #3b4863;
+        --m-line-hover: #5a6885;
+        --m-navy: #2f49b0;
+        --m-disabled-bg: #2a3348;
+        --m-disabled-ink: #7d88a3;
+        --m-accent: #a9baff;
+        --m-accent-strong: #c9d4ff;
+        --m-mint-ink: #29f894;
+        --m-mint-soft: rgba(0, 247, 123, .22);
+        --m-danger: #f79b95;
+        --m-danger-ink: #ffc4bf;
+        --m-danger-bg: #2c1a19;
+        --m-danger-line: #5e2f2c;
+        --m-success: #6ee0a3;
+        --m-success-bg: #10251c;
+        --m-success-line: #22543c;
+        --m-warn: #f0b357;
+        --m-warn-ink: #f6cd92;
+        --m-warn-bg: #2a2113;
+        --m-warn-line: #57431f;
+        --m-info-bg: #16224a;
+        --m-info-bg-strong: #1d2c5e;
+        --m-info-line: #2e3f7a;
+        --m-control-active: #4257c4;
+        --m-hover: rgba(255, 255, 255, .06);
+        --m-hover-strong: rgba(255, 255, 255, .09);
+        --m-header-bg: #1c2540;
+        --m-header-bg-2: #151c31;
+        --m-panel-bg: transparent;
+        --m-shadow-sm: 0 1px 2px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .35);
+        --m-shadow: 0 6px 14px -10px rgba(0, 0, 0, .65), 0 1px 3px rgba(0, 0, 0, .45);
+        --m-shadow-lg: 0 28px 56px -28px rgba(0, 0, 0, .75), 0 10px 24px -16px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .07);
+        --m-ring: 0 0 0 3px rgba(0, 247, 123, .45);
+        --m-ring-navy: 0 0 0 4px rgba(169, 186, 255, .22);
+        --m-logo-plate-bg: rgba(255, 255, 255, .94);
+        --m-logo-plate-pad: 8px;
+        --m-plate-bg: rgba(255, 255, 255, .94);
+        --m-plate-pad: 10px 16px;
+        --m-plate-radius: 14px;
+        --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23a9baff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .10), transparent 60%);
+        --bs-body-bg: var(--m-surface-2);
+        --bs-body-color: var(--m-ink);
+        --bs-border-color: var(--m-line);
+        --bs-link-color: #6ea8fe;
+        --bs-link-hover-color: #9ec5fe;
+        --bs-modal-bg: var(--m-surface);
+    }
+}
+
+:root[data-moka-theme="dark"] {
+    color-scheme: dark;
+    --m-ink: #e9edf8;
+    --m-ink-2: #c2cbe2;
+    --m-muted: #98a3bf;
+    --m-surface: #151c31;
+    --m-surface-2: #0b1020;
+    --m-surface-3: #1f2842;
+    --m-line: #27314c;
+    --m-line-strong: #3b4863;
+    --m-line-hover: #5a6885;
+    --m-navy: #2f49b0;
+    --m-disabled-bg: #2a3348;
+    --m-disabled-ink: #7d88a3;
+    --m-accent: #a9baff;
+    --m-accent-strong: #c9d4ff;
+    --m-mint-ink: #29f894;
+    --m-mint-soft: rgba(0, 247, 123, .22);
+    --m-danger: #f79b95;
+    --m-danger-ink: #ffc4bf;
+    --m-danger-bg: #2c1a19;
+    --m-danger-line: #5e2f2c;
+    --m-success: #6ee0a3;
+    --m-success-bg: #10251c;
+    --m-success-line: #22543c;
+    --m-warn: #f0b357;
+    --m-warn-ink: #f6cd92;
+    --m-warn-bg: #2a2113;
+    --m-warn-line: #57431f;
+    --m-info-bg: #16224a;
+    --m-info-bg-strong: #1d2c5e;
+    --m-info-line: #2e3f7a;
+    --m-control-active: #4257c4;
+    --m-hover: rgba(255, 255, 255, .06);
+    --m-hover-strong: rgba(255, 255, 255, .09);
+    --m-header-bg: #1c2540;
+    --m-header-bg-2: #151c31;
+    --m-panel-bg: transparent;
+    --m-shadow-sm: 0 1px 2px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .35);
+    --m-shadow: 0 6px 14px -10px rgba(0, 0, 0, .65), 0 1px 3px rgba(0, 0, 0, .45);
+    --m-shadow-lg: 0 28px 56px -28px rgba(0, 0, 0, .75), 0 10px 24px -16px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .07);
+    --m-ring: 0 0 0 3px rgba(0, 247, 123, .45);
+    --m-ring-navy: 0 0 0 4px rgba(169, 186, 255, .22);
+    --m-logo-plate-bg: rgba(255, 255, 255, .94);
+    --m-logo-plate-pad: 8px;
+    --m-plate-bg: rgba(255, 255, 255, .94);
+    --m-plate-pad: 10px 16px;
+    --m-plate-radius: 14px;
+    --m-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23a9baff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        radial-gradient(720px 380px at 100% -2%, rgba(0, 247, 123, .10), transparent 60%);
+    --bs-body-bg: var(--m-surface-2);
+    --bs-body-color: var(--m-ink);
+    --bs-border-color: var(--m-line);
+    --bs-link-color: #6ea8fe;
+    --bs-link-hover-color: #9ec5fe;
+    --bs-modal-bg: var(--m-surface);
+}
