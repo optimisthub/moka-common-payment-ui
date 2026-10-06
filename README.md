@@ -34,14 +34,15 @@ moka-united-checkout-ui-redesign/
 ├── README.md                                   Bu dosya
 ├── .gitignore                                  İç notları ve çalışma dosyalarını dışarıda tutar
 ├── .nojekyll                                   GitHub Pages'in dosyaları olduğu gibi sunması için
-├── preview/
-│   ├── karsilastirma-masaustu.png              Önce / sonra — masaüstü (1440px)
-│   ├── karsilastirma-mobil.png                 Önce / sonra — mobil (390px, yan yana)
+├── preview/                                    Tüm görseller 2× çözünürlükte (retina)
+│   ├── before-masaustu.png · after-masaustu.png        Before / After — masaüstü (1440×830)
+│   ├── before-mobil.png · after-mobil.png              Before / After — mobil tam sayfa (390×1214)
+│   ├── before-mobil-ekran.png · after-mobil-ekran.png  Telefon mockup'ı için ilk ekran (390×760)
 │   ├── dolu-form.png                           Doldurulmuş formun yakın planı
-│   ├── acik-tema-genis-ekran.png               1664px — geniş ekran (halkalar sınır içinde)
-│   ├── acik-tema-havale-eft.png                Havale / EFT akışı
-│   ├── acik-tema-modallar.png                  Şifre modalı
-│   └── acik-tema-hata.png                      Hata ve doğrulama durumları
+│   ├── genis-ekran.png                         1664px — geniş ekran (halkalar sınır içinde)
+│   ├── havale-eft.png                          Havale / EFT akışı
+│   ├── modallar.png                            Şifre modalı
+│   └── hata.png                                Hata ve doğrulama durumları
 └── assets/
     ├── css/commonpayment-new.css         ★     TESLİM EDİLEN DOSYA (üretimdekinin yerine geçer)
     ├── js/preview-only.js                      Yalnızca önizleme; üretimde KULLANILMAZ
@@ -235,8 +236,14 @@ dolu form, havale/EFT, şifre modalı, hata durumu).
 ### Karşılaştırma Galerisi
 
 `karsilastirma.html` bu görselleri **açıklamalarıyla** sunan bağımsız bir sayfadır:
-önce/sonra farkları (neler değişti / neler değişmedi), ölçüm tablosu, durum ekranları
-ve yapı sözleşmesi. Ödeme sayfasının CSS'inden etkilenmez, kendi token'larını taşır.
+**Before / After** karşılaştırmaları (neler değişti / neler değişmedi), ölçüm tablosu,
+durum ekranları ve yapı sözleşmesi. Ödeme sayfasının CSS'inden etkilenmez, kendi
+token'larını taşır.
+
+- Karşılaştırma etiketleri görsele gömülü değil, **arayüzün parçasıdır** (rozet + meta satırı).
+- Masaüstü görselleri çerçeveli iki panelde alt alta, mobil görseller **telefon mockup'ı**
+  içinde yan yana gösterilir; mockup'ta ilk ekran görünür, tıklayınca tam sayfa açılır.
+- Tüm görseller `--force-device-scale-factor=2` ile üretildi (2× = retina netliğinde).
 
 - Yayında: <https://optimisthub.github.io/moka-united-checkout-ui-redesign/karsilastirma.html>
 - Yerelde: `moka-united-checkout-ui-redesign/karsilastirma.html`

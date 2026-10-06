@@ -29,9 +29,9 @@
     --g-mint-ink: #00753c;
     --g-radius: 16px;
     --g-radius-lg: 24px;
-    --g-shadow-sm: 0 1px 2px rgba(15, 27, 66, .05), 0 1px 3px rgba(15, 27, 66, .04);
-    --g-shadow: 0 8px 20px -14px rgba(15, 27, 66, .22), 0 1px 3px rgba(15, 27, 66, .05);
-    --g-shadow-lg: 0 30px 60px -30px rgba(15, 27, 66, .35), 0 12px 26px -18px rgba(15, 27, 66, .16);
+    --g-shadow-sm: 0 1px 2px rgba(0, 0, 0, .05), 0 1px 3px rgba(0, 0, 0, .04);
+    --g-shadow: 0 8px 20px -14px rgba(0, 0, 0, .20), 0 1px 3px rgba(0, 0, 0, .05);
+    --g-shadow-lg: 0 30px 60px -30px rgba(0, 0, 0, .32), 0 12px 26px -18px rgba(0, 0, 0, .16);
     --g-font: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --g-container: 1200px;
     color-scheme: light;
@@ -221,13 +221,117 @@ a:hover { color: #0b5ed7; }
 
     .g-tag--mint { background-color: var(--g-mint-soft); color: var(--g-mint-ink); }
 
-.g-compare__shot {
-    display: block;
-    background-color: var(--g-surface-3);
-    border-bottom: 1px solid var(--g-line);
+/* --- Before / After kareleri -------------------------------------------- */
+.g-shots {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 24px 4px;
 }
 
-    .g-compare__shot img { width: 100%; }
+.g-shot { margin: 0; }
+
+.g-shot__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-bottom: 10px;
+}
+
+.g-shot__bar--center { justify-content: center; text-align: center; }
+
+.g-shot__meta { font-size: 13px; color: var(--g-muted); }
+
+.g-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .01em;
+}
+
+    .g-badge::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: .5;
+    }
+
+.g-badge--before { background-color: var(--g-surface-3); color: #4a5573; }
+
+.g-badge--after { background-color: var(--g-navy); color: #fff; }
+
+    .g-badge--after::before { background-color: var(--g-mint); opacity: 1; }
+
+.g-shot__frame {
+    display: block;
+    border-radius: var(--g-radius);
+    overflow: hidden;
+    background-color: var(--g-surface-3);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 10px 26px -20px rgba(0, 0, 0, .26);
+}
+
+    .g-shot__frame img { width: 100%; }
+
+/* --- Telefon mockup'ları ------------------------------------------------ */
+.g-phones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px 24px 4px;
+    align-items: start;
+}
+
+.g-phone {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.g-phone__link { display: block; width: 100%; max-width: 280px; }
+
+.g-phone__frame {
+    display: block;
+    padding: 9px;
+    border-radius: 34px;
+    background-color: #101733;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .18), 0 26px 46px -28px rgba(0, 0, 0, .45);
+}
+
+.g-phone__screen {
+    display: block;
+    position: relative;
+    border-radius: 26px;
+    overflow: hidden;
+    background-color: #fff;
+    /* Telefon ekranı oranı (390×760) */
+    aspect-ratio: 390 / 760;
+}
+
+    .g-phone__screen img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: top center;
+    }
+
+    /* Altta devamı olduğunu hissettiren yumuşak geçiş */
+    .g-phone__screen::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 68px;
+        background-image: linear-gradient(to top, rgba(255, 255, 255, .97), rgba(255, 255, 255, 0));
+        pointer-events: none;
+    }
 
 .g-compare__body {
     display: grid;
@@ -466,6 +570,10 @@ a:hover { color: #0b5ed7; }
 
 @media (max-width: 600px) {
     .g-container { padding: 0 16px; }
+    .g-shots, .g-phones { padding: 16px 16px 4px; gap: 16px; }
+    .g-phone__frame { padding: 6px; border-radius: 24px; }
+    .g-phone__screen { border-radius: 19px; }
+    .g-badge { font-size: 12px; padding: 4px 10px 4px 8px; }
     .g-hero { padding: 30px 0 34px; }
     .g-section { padding-top: 42px; }
     .g-section:last-of-type { padding-bottom: 48px; }
@@ -498,15 +606,16 @@ a:hover { color: #0b5ed7; }
 
 <main>
     <!-- ============ 1. ÖNCE / SONRA ============ -->
-    <section class="g-section" aria-labelledby="b-once-sonra">
+    <section class="g-section" aria-labelledby="b-before-after">
         <div class="g-container">
             <div class="g-section__head">
-                <h2 id="b-once-sonra">Önce / sonra</h2>
+                <h2 id="b-before-after">Before / After</h2>
                 <span class="g-count">1440px · 390px</span>
             </div>
             <p class="g-section__note">
-                Görsellerin sol tarafı canlı sayfanın eski hâli, sağ tarafı yeni tasarım.
-                Ölçüler orijinalden birebir alındı; değişen şey renk, boşluk ve hiyerarşi düzeni.
+                Sol/sol üst taraf canlı sayfanın eski hâli, sağ/alt taraf yeni tasarım. Ölçüler orijinalden
+                birebir alındı; değişen şey renk, boşluk ve hiyerarşi düzeni. Görseller 2× çözünürlükte
+                üretildi, tıklayınca tam boyut açılır.
             </p>
 
             <article class="g-compare">
@@ -518,19 +627,41 @@ a:hover { color: #0b5ed7; }
                         <span class="g-tag g-tag--mint">Kart gradyanı birebir</span>
                     </div>
                 </div>
-                <a class="g-compare__shot" href="preview/karsilastirma-masaustu.png" target="_blank" rel="noopener">
-                    <img src="preview/karsilastirma-masaustu.png" width="1440" height="1746"
-                         alt="Masaüstü önce/sonra karşılaştırması: solda eski tasarım, sağda yeni tasarım."
-                         loading="lazy" decoding="async">
-                </a>
+
+                <div class="g-shots">
+                    <figure class="g-shot">
+                        <figcaption class="g-shot__bar">
+                            <span class="g-badge g-badge--before">Before</span>
+                            <span class="g-shot__meta">Eski tasarım · 1440×830</span>
+                        </figcaption>
+                        <a class="g-shot__frame" href="preview/before-masaustu.png" target="_blank" rel="noopener">
+                            <img src="preview/before-masaustu.png" width="1440" height="830"
+                                 alt="Masaüstü, eski tasarım: gri kart paneli, gradyanlı üst bant ve beyaz ikincil düğme."
+                                 loading="lazy" decoding="async">
+                        </a>
+                    </figure>
+
+                    <figure class="g-shot">
+                        <figcaption class="g-shot__bar">
+                            <span class="g-badge g-badge--after">After</span>
+                            <span class="g-shot__meta">Yeni tasarım · 1440×830</span>
+                        </figcaption>
+                        <a class="g-shot__frame" href="preview/after-masaustu.png" target="_blank" rel="noopener">
+                            <img src="preview/after-masaustu.png" width="1440" height="830"
+                                 alt="Masaüstü, yeni tasarım: düz lacivert üst bant, panel zemini kaldırılmış, panel sağ kolonla hizalı."
+                                 loading="lazy" decoding="async">
+                        </a>
+                    </figure>
+                </div>
+
                 <div class="g-compare__body">
                     <div>
                         <p class="g-label">Neler değişti</p>
                         <ul class="g-list g-list--ok">
                             <li>Üst bant tek düz renk <code>#223886</code>; gradyan, ışık ve çizgi katmanları kaldırıldı.</li>
-                            <li>Kart bloğu (kart + halkalar + desenler) masaüstünde <strong>%10 küçültüldü</strong>; logo ve iç ölçüler aynı kaldı.</li>
                             <li>Kart paneli sağ kolondaki “Ödeme Onayı” başlığıyla <strong>üstten ve alttan tam hizalı</strong> (fark 0px).</li>
                             <li>Kart alanının zemini kaldırıldı; logo, kart ve köşe grafikleri doğrudan sayfa yüzeyinde.</li>
+                            <li>Kart bloğu masaüstünde <strong>%10 küçültüldü</strong>; logo ve iç ölçüler aynı kaldı.</li>
                             <li>İki düğme de orijinal mavi <code>#223886</code> ve orijinal <strong>6px</strong> köşe yarıçapında.</li>
                             <li>KVKK bağlantısı standart mavi <code>#0d6efd</code> ve altı çizili; link olduğu anlaşılıyor.</li>
                             <li>Form alanları tek parça: Kart Sahibi → Kart Numarası arası <strong>0px</strong>.</li>
@@ -558,11 +689,43 @@ a:hover { color: #0b5ed7; }
                         <span class="g-tag g-tag--mint">İlk ekranda form</span>
                     </div>
                 </div>
-                <a class="g-compare__shot" href="preview/karsilastirma-mobil.png" target="_blank" rel="noopener">
-                    <img src="preview/karsilastirma-mobil.png" width="736" height="1214"
-                         alt="Mobil önce/sonra karşılaştırması: solda eski, sağda yeni tasarım."
-                         loading="lazy" decoding="async">
-                </a>
+
+                <div class="g-phones">
+                    <figure class="g-phone">
+                        <figcaption class="g-shot__bar g-shot__bar--center">
+                            <span class="g-badge g-badge--before">Before</span>
+                            <span class="g-shot__meta">343px marka bloğu</span>
+                        </figcaption>
+                        <a class="g-phone__link" href="preview/before-mobil.png" target="_blank" rel="noopener"
+                           aria-label="Eski mobil tasarımı tam boyut aç">
+                            <span class="g-phone__frame">
+                                <span class="g-phone__screen">
+                                    <img src="preview/before-mobil-ekran.png" width="390" height="760"
+                                         alt="Mobil, eski tasarım (ilk ekran): logo ve kart alt alta, tutar ve form ekranın altında kalıyor."
+                                         decoding="async">
+                                </span>
+                            </span>
+                        </a>
+                    </figure>
+
+                    <figure class="g-phone">
+                        <figcaption class="g-shot__bar g-shot__bar--center">
+                            <span class="g-badge g-badge--after">After</span>
+                            <span class="g-shot__meta">157px marka şeridi</span>
+                        </figcaption>
+                        <a class="g-phone__link" href="preview/after-mobil.png" target="_blank" rel="noopener"
+                           aria-label="Yeni mobil tasarımı tam boyut aç">
+                            <span class="g-phone__frame">
+                                <span class="g-phone__screen">
+                                    <img src="preview/after-mobil-ekran.png" width="390" height="760"
+                                         alt="Mobil, yeni tasarım (ilk ekran): logo solda kart sağda; tutar ve form ilk ekranda görünüyor."
+                                         decoding="async">
+                                </span>
+                            </span>
+                        </a>
+                    </figure>
+                </div>
+
                 <div class="g-compare__body">
                     <div>
                         <p class="g-label">Neler değişti</p>
@@ -571,8 +734,8 @@ a:hover { color: #0b5ed7; }
                             <li>“Ödeme Onayı” başlığı <span class="g-num">y=471 → y=272</span>; tutar ve form ilk ekranda görünür.</li>
                             <li>Kart genişliği panelden türetilir: <code>min(100cqw − logo − boşluk, 320px)</code>.</li>
                             <li>Küçük kartta iç tipografi oranları yükseltilir; kart numarası tam okunur.</li>
-                            <li>Kart bilgileri ızgarası telefonda tek kolona iner.</li>
                             <li>Logo sağ kenarı sabit kalarak sola doğru <strong>%12,5 büyütüldü</strong>; kartın konumu değişmedi.</li>
+                            <li>Ödeme düğmeleri <span class="g-num">54px → 49px</span> (−%10), kart bilgileri ızgarası tek kolona iner.</li>
                         </ul>
                     </div>
                     <div>
@@ -581,6 +744,7 @@ a:hover { color: #0b5ed7; }
                             <li>360px şerit <span class="g-num">139px</span>, 390px <span class="g-num">157px</span>, 480px <span class="g-num">201px</span>.</li>
                             <li>Şerit <span class="g-num">≤767px</span> boyunca geçerli; 768px’te iki kolonlu düzene döner.</li>
                             <li>Kart üst sınırı <span class="g-num">320px</span>; genişlikle birlikte orantılı küçülür.</li>
+                            <li>Ekran görüntüleri tam sayfa (<span class="g-num">390×1214</span>); mockup içinde ilk ekran kırpılır, tıklayınca tamamı açılır.</li>
                         </ul>
                     </div>
                 </div>
@@ -588,7 +752,6 @@ a:hover { color: #0b5ed7; }
         </div>
     </section>
 
-    <!-- ============ 2. ÖLÇÜMLER ============ -->
     <section class="g-section" aria-labelledby="b-olcum">
         <div class="g-container">
             <div class="g-section__head">
@@ -670,14 +833,14 @@ a:hover { color: #0b5ed7; }
 
             <div class="g-grid">
                 <article class="g-card">
-                    <a class="g-card__shot" href="preview/acik-tema-genis-ekran.png" target="_blank" rel="noopener">
-                        <img src="preview/acik-tema-genis-ekran.png" width="1664" height="917"
+                    <a class="g-card__shot" href="preview/genis-ekran.png" target="_blank" rel="noopener">
+                        <img src="preview/genis-ekran.png" width="1664" height="917"
                              alt="1664px geniş ekran görünümü; köşe halkaları panel sınırının içinde."
                              loading="lazy" decoding="async">
                     </a>
                     <div class="g-card__body">
                         <h3>Geniş ekran · 1664px</h3>
-                        <p>1600px üstünde köşe halkaları panelden 80px taşıyordu; alan 490px’e sabitlendi.</p>
+                        <p>1600px üstünde köşe halkaları panelden 80px taşıyordu; alan 490px’e sabitlendi, kart %10 küçültüldü.</p>
                     </div>
                 </article>
 
@@ -694,8 +857,8 @@ a:hover { color: #0b5ed7; }
                 </article>
 
                 <article class="g-card">
-                    <a class="g-card__shot" href="preview/acik-tema-havale-eft.png" target="_blank" rel="noopener">
-                        <img src="preview/acik-tema-havale-eft.png" width="1440" height="1010"
+                    <a class="g-card__shot" href="preview/havale-eft.png" target="_blank" rel="noopener">
+                        <img src="preview/havale-eft.png" width="1440" height="1010"
                              alt="Havale ve EFT ile ödeme akışının ekran görüntüsü."
                              loading="lazy" decoding="async">
                     </a>
@@ -706,8 +869,8 @@ a:hover { color: #0b5ed7; }
                 </article>
 
                 <article class="g-card">
-                    <a class="g-card__shot" href="preview/acik-tema-modallar.png" target="_blank" rel="noopener">
-                        <img src="preview/acik-tema-modallar.png" width="1440" height="900"
+                    <a class="g-card__shot" href="preview/modallar.png" target="_blank" rel="noopener">
+                        <img src="preview/modallar.png" width="1440" height="900"
                              alt="Şifre belirleme modalının ekran görüntüsü."
                              loading="lazy" decoding="async">
                     </a>
@@ -718,8 +881,8 @@ a:hover { color: #0b5ed7; }
                 </article>
 
                 <article class="g-card">
-                    <a class="g-card__shot" href="preview/acik-tema-hata.png" target="_blank" rel="noopener">
-                        <img src="preview/acik-tema-hata.png" width="1440" height="900"
+                    <a class="g-card__shot" href="preview/hata.png" target="_blank" rel="noopener">
+                        <img src="preview/hata.png" width="1440" height="900"
                              alt="Hata ve doğrulama durumlarının ekran görüntüsü."
                              loading="lazy" decoding="async">
                     </a>
