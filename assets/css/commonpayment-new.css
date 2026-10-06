@@ -2246,6 +2246,11 @@ a,
     #container-new-ui .credit-card-container .credit-card-container__logo img {
         width: 104px;
         margin-bottom: 0;
+        /* Logo yerinde kalır, yalnızca SOLA doğru büyür: sağ kenar sabit
+           (transform-origin: right center). `transform` yerleşimi etkilemediği
+           için kartın konumu ve ölçüsü değişmez. */
+        transform: scale(1.125);
+        transform-origin: right center;
     }
 
     #container-new-ui .credit-card-area {

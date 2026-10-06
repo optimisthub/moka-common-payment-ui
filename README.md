@@ -144,6 +144,7 @@ ama markup'tan silinirse daha temiz olur):
 ### Bileşenler
 - **Üst marka bandı:** orijinaldeki gibi **tek düz renk** `#223886` (gradyan, ışık veya
   çizgi yok — mokacustom `.blue` ile birebir).
+- **Mobil logo:** telefonda logo `transform: scale(1.125)` + `transform-origin: right center` ile **sağ kenarı sabit kalarak sola doğru %12,5** büyür; `transform` yerleşimi etkilemediği için kartın konumu ve ölçüsü değişmez.
 - **Ölçek:** masaüstünde kart bloğu (kart + halkalar + desenler) `--m-card-scale: .9` ile %10 küçültülür; `transform` kullanıldığı için iç ölçüler ve logo değişmez. Telefonda ödeme düğmeleri %10 kısadır (54px → 49px).
 - **Kart alanının zemini yok (şeffaf):** logo, kart ve halkalar doğrudan sayfa
   zemini üzerinde durur; alan sağ kolonla üstten/alttan hizalı kalmaya devam eder.
@@ -198,7 +199,7 @@ ama markup'tan silinirse daha temiz olur):
 | Kart içi yerleşim | çip 100/64 · temassız 30/44 · numara 34px 120/72 · isim 21px 8/72 · ay-yıl 28px 68/180 · tip 70px 68/46 · şerit 42/82 · CVC 335×60 150/22 26px · imza 122×78 38/44 | eski CSS, birebir |
 | Arka şerit / CVC zemini | `#010202` / `#E2E2E0` | eski CSS, birebir |
 | Kart halkaları konumu | `-80/-70` (≤1400: `-40/-70`) | eski CSS, birebir |
-| Logo | 200px + `margin-bottom: 24px` | eski CSS, birebir |
+| Logo | 200px + `margin-bottom: 24px` (masaüstü) · telefonda 96/104px, sağ kenarı sabit **%12,5 sola büyütülür** | eski CSS + mobil dokunuş |
 | Panel yarıçapı | 36px | eski CSS, birebir |
 | Panel zemini | **kaldırıldı — şeffaf** (orijinal `#F2F2F1`) | bilinçli değişiklik |
 | Üst-sol halka / yıldız | `#00F77B` @ `fill-opacity="0.3"` + `#233981` | önizleme markup'ındaki SVG nitelikleri |
