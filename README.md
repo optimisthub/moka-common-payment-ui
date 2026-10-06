@@ -36,18 +36,24 @@ moka-common-payment-ui/
 │   ├── karsilastirma-mobil.png                 Önce / sonra — mobil (390px, yan yana)
 │   ├── karanlik-tema-masaustu.png              Karanlık tema — masaüstü
 │   ├── karanlik-tema-mobil.png                 Karanlık tema — mobil
-│   └── dolu-form.png                           Doldurulmuş formun yakın planı
+│   ├── dolu-form.png                           Doldurulmuş formun yakın planı
+│   ├── acik-tema-havale-eft.png                Havale / EFT akışı
+│   ├── acik-tema-modallar.png                  Şifre modalı
+│   └── acik-tema-hata.png                      Hata ve doğrulama durumları
 └── assets/
     ├── css/commonpayment-new.css         ★     TESLİM EDİLEN DOSYA (üretimdekinin yerine geçer)
     ├── js/preview-only.js                      Yalnızca önizleme; üretimde KULLANILMAZ
     ├── img/mokaunitedlogo.png                  Önizleme için kopyalandı
     ├── img/card_logos/*.png                    Kart tipi + alt şerit logoları
     ├── fonts/source-sans-pro/*.woff2           Gerçek 600/700 ağırlıkları (opsiyonel, bkz. §6)
-    └── vendor/                                 Önizlemenin üretimle aynı görünmesi için
-        ├── bootstrap.min.css                   (üretimden indirildi, değiştirilmedi)
-        ├── mokacustom.css                      (üretimden indirildi, değiştirilmedi)
+    └── vendor/
+        ├── bootstrap.min.css                   Bootstrap 5 (MIT)
         └── preview-fonts.css                   Yalnızca önizleme font tanımları
 ```
+
+> Demo, Moka'nın `mokacustom.css` dosyasına ihtiyaç duymaz: görsel etkisi ölçülerek
+> sıfır bulundu (onunla ve onsuz render arasında RMSE = 0), bu yüzden pakete dahil
+> edilmedi. Üretimde sayfa bu dosyayı yükler.
 
 ---
 
@@ -224,11 +230,8 @@ tasarımın tüm durumlarını görebilirsiniz (virgülle birden fazla):
 | `#measure` | Sayfa sonuna tüm kritik ölçüleri JSON olarak basar (tasarım denetimi) |
 | `#mobile` | Masaüstünde mobil genişliği taklit eder |
 
-Ek durum görüntüleri: `.design/common-payment/durumlar/`
-(`once-masaustu/mobil` · `acik-tema-*` · `karanlik-tema-*` — masaüstü, mobil,
-dolu form ve havale/EFT akışı).
-`.design/common-payment/` ayrıca karşılaştırma için canlı sayfanın indirilmiş
-markup'ını (`live.html`), eski CSS'ini (`commonpayment-new.OLD.css`) ve üretim JS'ini içerir.
+Önce/sonra ve tüm durum görüntüleri `preview/` klasöründedir (masaüstü, mobil,
+dolu form, havale/EFT, şifre modalı, hata durumu).
 
 `assets/js/preview-only.js` yalnızca bu önizleme içindir; kart numarasının görsel karta
 yansıması, kart çevirme, kart tipi logosu ve sekme gizleme davranışlarını üretimdeki
