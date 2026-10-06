@@ -404,10 +404,10 @@ a,
 #container-new-ui .credit-card-front,
 #container-new-ui .credit-card-back {
     position: absolute;
-    /* Dekoratif ışık desenleri kartın dışına taşıyordu; zemin şeffaf olduğu
-       için koyu sayfada leke olarak görünüyordu. Kart sınırına kırpılır —
-       kartın içindeki görünüm orijinaldeki ile aynı kalır. */
-    overflow: hidden;
+    /* DİKKAT: Buraya overflow:hidden EKLEMEYİN. Yüzeyde kırpma katmanı
+       oluştuğunda Chrome backface-visibility culling'ini zaman zaman kaybediyor
+       ve arka yüz ön yüzün üstüne biniyor (canlı demoda 3 render'ın 2'sinde
+       görüldü). Kırpma, dekoratif katmanın kendisinde yapılır (__effects). */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -476,6 +476,17 @@ a,
             width: 70px;
             height: auto;
         }
+
+/* Dekoratif ışık desenleri kartın dışına taşıyordu; kart alanı şeffaf olduğu
+   için koyu/boş alanda leke olarak görünüyordu. Kırpma burada, kartın köşe
+   yarıçapıyla yapılır — kartın içindeki görünüm orijinaldeki ile aynı kalır. */
+#container-new-ui .credit-card-front__effects {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
 
 #container-new-ui .credit-card-front__effects__first-svg {
     position: absolute;
