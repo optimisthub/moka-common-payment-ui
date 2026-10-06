@@ -144,6 +144,7 @@ ama markup'tan silinirse daha temiz olur):
 ### Bileşenler
 - **Üst marka bandı:** orijinaldeki gibi **tek düz renk** `#223886` (gradyan, ışık veya
   çizgi yok — mokacustom `.blue` ile birebir).
+- **Ölçek:** masaüstünde kart bloğu (kart + halkalar + desenler) `--m-card-scale: .9` ile %10 küçültülür; `transform` kullanıldığı için iç ölçüler ve logo değişmez. Telefonda ödeme düğmeleri %10 kısadır (54px → 49px).
 - **Kart alanının zemini yok (şeffaf):** logo, kart ve halkalar doğrudan sayfa
   zemini üzerinde durur; alan sağ kolonla üstten/alttan hizalı kalmaya devam eder.
   Gri zemine dönmek için tek satır: `--m-panel-bg: #F3F4F6` (modernize gri) veya
@@ -193,7 +194,7 @@ ama markup'tan silinirse daha temiz olur):
 | Üst marka bandı | düz `#223886` | `mokacustom.css` `.blue` |
 | Kart paneli zemini | düz `#F2F2F1` | eski `commonpayment-new.css` |
 | Kart yüzeyi (ön/arka) | `radial-gradient(100.04% 183.04% at -0.04% 99.9%, #00F77B 0%, rgba(38,66,154,.89) 66.61%, #0D3C94 100%)` | eski CSS, birebir |
-| Kart ölçüsü / yarıçapı | 650 → **590** → 550 (≤1366) → 490 (≤1280) px · 40 → **35** → 30 px | eski CSS; üst sınır 590px'e çekildi (bkz. not) |
+| Kart ölçüsü / yarıçapı | 650 → **590** → 550 (≤1366) → 490 (≤1280) px · 40 → **35** → 30 px | eski CSS; üst sınır 590px + masaüstünde **%90 ölçek** (`--m-card-scale`) |
 | Kart içi yerleşim | çip 100/64 · temassız 30/44 · numara 34px 120/72 · isim 21px 8/72 · ay-yıl 28px 68/180 · tip 70px 68/46 · şerit 42/82 · CVC 335×60 150/22 26px · imza 122×78 38/44 | eski CSS, birebir |
 | Arka şerit / CVC zemini | `#010202` / `#E2E2E0` | eski CSS, birebir |
 | Kart halkaları konumu | `-80/-70` (≤1400: `-40/-70`) | eski CSS, birebir |
