@@ -171,6 +171,11 @@ a:hover { color: #0b5ed7; }
     font-size: 15px;
 }
 
+    /* Her cümle kendi satırında */
+    .g-section__note--lines > span { display: block; }
+
+    .g-section__note--lines > span + span { margin-top: 3px; }
+
 .g-count {
     padding: 3px 9px;
     border-radius: 999px;
@@ -589,7 +594,7 @@ a:hover { color: #0b5ed7; }
 
 <header class="g-hero">
     <div class="g-container">
-        <p class="g-eyebrow">Optimist Hub · Tasarım çalışması</p>
+        <p class="g-eyebrow">Optimist Hub · Design Work</p>
         <h1>Moka United Checkout UI Redesign<br>Karşılaştırma Galerisi</h1>
         <p>
             Mevcut ödeme sayfasının <strong>yapısı bozulmadan</strong> yalnızca CSS katmanı yenilendi:
@@ -612,10 +617,10 @@ a:hover { color: #0b5ed7; }
                 <h2 id="b-before-after">Before / After</h2>
                 <span class="g-count">1440px · 390px</span>
             </div>
-            <p class="g-section__note">
-                Sol/sol üst taraf canlı sayfanın eski hâli, sağ/alt taraf yeni tasarım. Ölçüler orijinalden
-                birebir alındı; değişen şey renk, boşluk ve hiyerarşi düzeni. Görseller 2× çözünürlükte
-                üretildi, tıklayınca tam boyut açılır.
+            <p class="g-section__note g-section__note--lines">
+                <span>Sol/sol üst taraf canlı sayfanın eski hâli, sağ/alt taraf yeni tasarım.</span>
+                <span>Ölçüler orijinalden birebir alındı; değişen şey renk, boşluk ve hiyerarşi düzeni.</span>
+                <span>Görseller 2× çözünürlükte üretildi, tıklayınca tam boyut açılır.</span>
             </p>
 
             <article class="g-compare">
